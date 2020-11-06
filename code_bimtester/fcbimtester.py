@@ -29,7 +29,7 @@ fcbimtester.generate_report(runpath)
 
 from code_bimtester import fcbimtester
 myfeatures_path = "/home/hugo/.FreeCAD/Mod/bimtester/features_bimtester/"
-myifcfile_path = "/home/hugo/Desktop/zeug/z_some_ifc/"
+myifcfile_path = "/home/hugo/Documents/zeug_sort/z_some_ifc/"
 ifcfilename = "3_15025_KiGa_ING_N_TRW.ifc"
 runpath = fcbimtester.run_intmp_tests({"features": myfeatures_path, "ifcpath": myifcfile_path, "ifcfilename": ifcfilename})
 fcbimtester.generate_report(runpath)
@@ -135,11 +135,16 @@ def run_intmp_tests(args={}):
                     .format(os.path.join(ifc_path, ifc_filename))
                 )
                 # print(newifcline)
+                break
+        else:
+            print("The line which sets the ifc file to test was not found.")
+            newifcline = ""
         # replace the line
-        # https://stackoverflow.com/a/290494
-        for line in fileinput.input(feature_file, inplace=True):
-            # the print replaces the line in the file
-            print(line.replace(theline, newifcline), end="")
+        if newifcline != "":
+            # https://stackoverflow.com/a/290494
+            for line in fileinput.input(feature_file, inplace=True):
+                # the print replaces the line in the file
+                print(line.replace(theline, newifcline), end="")
 
     # copy step files
     steps_path = os.path.join(bimtester_path,  "features", "steps")
