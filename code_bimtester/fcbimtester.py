@@ -19,6 +19,21 @@
 # *                                                                         *
 # ***************************************************************************
 
+# TODO merge into bimtester and make a PR to official bimtester module
+
+import fileinput
+import os
+import shutil
+import tempfile
+
+# import FreeCAD
+
+# get bimtester source code module path
+import code_bimtester
+bimtester_path = os.path.split(code_bimtester.__file__)[0]
+print(bimtester_path)
+
+
 """
 from freecad.bimtester import fcbimtester
 myfeatures_path = "/home/hugo/Desktop/zeug/SEER_FC/"
@@ -37,7 +52,10 @@ fcbimtester.generate_report(runpath)
 """
 
 """
-# clean logs to be able to run tests again but on another building model
+# clean logs to be able to run tests
+# once again but on another building model and in another directory
+# somehow does not work, thus test will be rund in the same directory
+# directory will be deleted before each new run
 # https://github.com/behave/behave/issues/871
 # run bimtester
 # copy manually this code, run code again, does not work
@@ -45,22 +63,6 @@ from behave.runner_util import reset_runtime
 reset_runtime()
 
 """
-
-
-# TODO merge into bimtester and make a PR to official bimtester module
-
-import fileinput
-import os
-import shutil
-import tempfile
-
-import FreeCAD
-
-
-# get bimtester source code module path
-import code_bimtester
-bimtester_path = os.path.split(code_bimtester.__file__)[0]
-print(bimtester_path)
 
 
 def run_intmp_tests(args={}):
@@ -102,7 +104,19 @@ def run_intmp_tests(args={}):
         ifc_filename = None
 
     # set up paths
-    run_path = tempfile.mkdtemp()
+    # a unique temp path should not be used
+    # behave raises an ambiguous step exception
+    # run_path = tempfile.mkdtemp()
+    # thus use the same path on every run
+    # but delete it if exists
+    run_path = os.path.join(tempfile.gettempdir(), "bimtesterfc")
+    if os.path.isdir(run_path):
+        from shutil import rmtree
+        rmtree(run_path)  # fails on read only files
+    if os.path.isdir(run_path):
+        print("Delete former beimtester run dir {} failed".format(run_path))
+        return False
+    os.mkdir(run_path)
     report_path = os.path.join(run_path, "report")
     copy_features_path = os.path.join(run_path, "features")
     copy_steps_path = os.path.join(copy_features_path, "steps")
