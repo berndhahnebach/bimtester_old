@@ -4,7 +4,7 @@ from utils import IfcFile
 from freecad.bimtester.tools_bimtester import get_logfile_path
 mylog = get_logfile_path()
 
-@step(u'there are no {ifc_class} elements because {reason}')
+@step("there are no {ifc_class} elements because {reason}")
 def step_impl(context, ifc_class, reason):
     assert len(IfcFile.get().by_type(ifc_class)) == 0
 
@@ -12,20 +12,20 @@ def step_impl(context, ifc_class, reason):
 @step('all {ifc_class} elements have a name matching the pattern "{pattern}"')
 def step_impl(context, ifc_class, pattern):
     import re
+
     elements = IfcFile.get().by_type(ifc_class)
     for element in elements:
         if not re.search(pattern, element.Name):
             assert False
 
 
-@step('all {ifc_class} elements have an {representation_class} representation')
+@step("all {ifc_class} elements have an {representation_class} representation")
 def step_impl(context, ifc_class, representation_class):
     logfile = open(mylog, "a")
     logfile.write("representation test\n")
     def is_item_a_representation(item, representation):
-        if '/' in representation:
-            for cls in representation.split('/'):
-                logfile.write("{}\n".format(cls))
+        if "/" in representation:
+            for cls in representation.split("/"):
                 if item.is_a(cls):
                     return True
         elif item.is_a(representation):
@@ -43,7 +43,7 @@ def step_impl(context, ifc_class, representation_class):
         for representation in element.Representation.Representations:
             for item in representation.Items:
                 logfile.write("    {}\n".format(item))
-                if item.is_a('IfcMappedItem'):
+                if item.is_a("IfcMappedItem"):
                     # We only check one more level deep.
                     for item2 in item.MappingSource.MappedRepresentation.Items:
                         if is_item_a_representation(item2, representation_class):
@@ -116,8 +116,10 @@ def step_impl(context, attribute, myattributesum):
         assert False, 'Some elemets missing the pset or property: {}, {}'.format(false_elements_id, false_elements_guid)
 
 
-use_step_matcher('re')
-@step('all (?P<ifc_class>.*) elements have an? (?P<attribute>.*) attribute')
+use_step_matcher("re")
+
+
+@step("all (?P<ifc_class>.*) elements have an? (?P<attribute>.*) attribute")
 def step_impl(context, ifc_class, attribute):
     elements = IfcFile.get().by_type(ifc_class)
     for element in elements:
@@ -125,25 +127,37 @@ def step_impl(context, ifc_class, attribute):
             assert False
 
 
-@step('all (?P<ifc_class>.*) elements have an? (?P<property_path>.*\..*) property value matching the pattern "(?P<pattern>.*)"')
+@step("all (?P<ifc_class>.*) elements have an? (?P<property_path>.*\..*) property")
+def step_impl(context, ifc_class, property_path):
+    pset_name, property_name = property_path.split(".")
+    elements = IfcFile.get().by_type(ifc_class)
+    for element in elements:
+        if not IfcFile.get_property(element, pset_name, property_name):
+            assert False
+
+
+@step(
+    'all (?P<ifc_class>.*) elements have an? (?P<property_path>.*\..*) property value matching the pattern "(?P<pattern>.*)"'
+)
 def step_impl(context, ifc_class, property_path, pattern):
     import re
-    pset_name, property_name = property_path.split('.')
+
+    pset_name, property_name = property_path.split(".")
     elements = IfcFile.get().by_type(ifc_class)
     for element in elements:
         prop = IfcFile.get_property(element, pset_name, property_name)
         if not prop:
             assert False
         # For now, we only check single values
-        if prop.is_a('IfcPropertySingleValue'):
-            if not (prop.NominalValue \
-                    and re.search(pattern, prop.NominalValue.wrappedValue)):
+        if prop.is_a("IfcPropertySingleValue"):
+            if not (prop.NominalValue and re.search(pattern, prop.NominalValue.wrappedValue)):
                 assert False
 
 
 @step('all (?P<ifc_class>.*) elements have an? (?P<attribute>.*) matching the pattern "(?P<pattern>.*)"')
 def step_impl(context, ifc_class, attribute, pattern):
     import re
+
     elements = IfcFile.get().by_type(ifc_class)
     for element in elements:
         value = getattr(element, attribute)
@@ -154,6 +168,7 @@ def step_impl(context, ifc_class, attribute, pattern):
 @step('all (?P<ifc_class>.*) elements have an? (?P<attributes>.*) taken from the list in "(?P<list_file>.*)"')
 def step_impl(context, ifc_class, attributes, list_file):
     import csv
+
     values = []
     with open(list_file) as csvfile:
         reader = csv.reader(csvfile)
@@ -162,16 +177,18 @@ def step_impl(context, ifc_class, attributes, list_file):
     elements = IfcFile.get().by_type(ifc_class)
     for element in elements:
         attribute_values = []
-        for attribute in attributes.split(','):
+        for attribute in attributes.split(","):
             if not hasattr(element, attribute):
-                assert False, f'Failed at element {element.GlobalId}'
+                assert False, f"Failed at element {element.GlobalId}"
             attribute_values.append(getattr(element, attribute))
         if attribute_values not in values:
-            assert False, f'Failed at element {element.GlobalId}'
+            assert False, f"Failed at element {element.GlobalId}"
 
 
-use_step_matcher('parse')
-@step('all {ifc_class} elements have a {qto_name}.{quantity_name} quantity')
+use_step_matcher("parse")
+
+
+@step("all {ifc_class} elements have a {qto_name}.{quantity_name} quantity")
 def step_impl(context, ifc_class, qto_name, quantity_name):
     elements = IfcFile.get().by_type(ifc_class)
     for element in elements:
@@ -187,25 +204,26 @@ def step_impl(context, ifc_class, qto_name, quantity_name):
             assert False
 
 
-use_step_matcher('parse')
-@step(u'the project has a {attribute_name} attribute with a value of "{attribute_value}"')
+use_step_matcher("parse")
+
+
+@step('the project has a {attribute_name} attribute with a value of "{attribute_value}"')
 def step_impl(context, attribute_name, attribute_value):
-    project = IfcFile.get().by_type('IfcProject')[0]
+    project = IfcFile.get().by_type("IfcProject")[0]
     assert getattr(project, attribute_name) == attribute_value
 
 
-@step(u'there is an {ifc_class} element with a {attribute_name} attribute with a value of "{attribute_value}"')
+@step('there is an {ifc_class} element with a {attribute_name} attribute with a value of "{attribute_value}"')
 def step_impl(context, ifc_class, attribute_name, attribute_value):
     elements = IfcFile.get().by_type(ifc_class)
     for element in elements:
-        if hasattr(element, attribute_name) \
-                and getattr(element, attribute_name) == attribute_value:
+        if hasattr(element, attribute_name) and getattr(element, attribute_name) == attribute_value:
             return
     assert False
 
 
-@step(u'all buildings have an address')
+@step("all buildings have an address")
 def step_impl(context):
-    for building in IfcFile.get().by_type('IfcBuilding'):
+    for building in IfcFile.get().by_type("IfcBuilding"):
         if not building.BuildingAddress:
             assert False, f'The building "{building.Name}" has no address.'
