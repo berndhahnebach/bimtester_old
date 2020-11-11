@@ -1,7 +1,7 @@
 from behave import step
 from utils import IfcFile
 
-from freecad.bimtester.tools_bimtester import get_logfile_path
+from freecad.bimtester.utils import get_logfile_path
 mylog = get_logfile_path()
 
 @step("there are no {ifc_class} elements because {reason}")

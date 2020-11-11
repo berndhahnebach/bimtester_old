@@ -1,6 +1,8 @@
 ### Generall information
 + the ifc should not be on a windows network resource
 + ATM it has to be locally
++ This file might not the right place for all what is in,
++ but I do not know any better place ATM.
 
 
 ### BIMTester in BlenderBIM
@@ -27,3 +29,8 @@
 
 ### Code examples
 + TODO: add from my local machine
+
+
+### Remaining issues
++ https://github.com/behave/behave/issues/264
++ https://github.com/behave/behave/issues/549

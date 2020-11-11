@@ -24,11 +24,8 @@ import os
 # import FreeCAD
 
 
-if open.__module__ == "__builtin__":
-    # because we'll redefine open below (Python2)
-    pyopen = open
-elif open.__module__ == "io":
-    # because we'll redefine open below (Python3)
+if open.__module__ == "io":
+    # because we'll redefine open below
     pyopen = open
 
 
@@ -44,15 +41,11 @@ def open(filename):
     the_features_path = os.path.split(features_bimtester.__file__)[0]
     print(the_features_path)
 
-    from freecad.bimtester.tools_bimtester import run_bimtester
-    status = run_bimtester(
+    from freecad.bimtester.utils import run_all
+    status = run_all(
         the_features_path,
         the_ifcfile_path,
         the_ifcfile_name
     )
 
     return status
-
-
-# https://github.com/behave/behave/issues/264
-# https://github.com/behave/behave/issues/549

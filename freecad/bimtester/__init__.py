@@ -23,4 +23,4 @@
 
 import FreeCAD
 
-FreeCAD.addImportType("1 run BimTester (*.ifc)", "freecad.bimtester.run_bimtester")
+FreeCAD.addImportType("1 run BimTester (*.ifc)", "freecad.bimtester.import_ifc")
