@@ -32,14 +32,17 @@ if open.__module__ == "io":
 def open(filename):
 
     # ifc file
-    print(filename)
+    # print(filename)
     splitpath = os.path.split(filename)
     the_ifcfile_path, the_ifcfile_name = splitpath[0], splitpath[1]
 
     # feature files path
     import features_bimtester
     the_features_path = os.path.split(features_bimtester.__file__)[0]
+
     print(the_features_path)
+    print(the_ifcfile_path)
+    print(the_ifcfile_name)
 
     from freecad.bimtester.utils import run_all
     status = run_all(
