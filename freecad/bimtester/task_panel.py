@@ -53,6 +53,11 @@ class TaskPanelBimTester(QtGui.QWidget):
     ifcfile_changed = QtCore.Signal()
     featurefilesdir_changed = QtCore.Signal()
 
+    # get feature files directory path
+    import features_bimtester
+    base_features_path = os.path.split(features_bimtester.__file__)[0]
+    print(base_features_path)
+
     def __init__(self):
         super(TaskPanelBimTester, self).__init__()
         self._setup_ui()
@@ -89,10 +94,15 @@ class TaskPanelBimTester(QtGui.QWidget):
         _ffdir_str = "Feature files directory"
         featurefilesdir_label = QtGui.QLabel(_ffdir_str, self)
         self._featurefilesdir_text = QtGui.QLineEdit()
-        self._featurefilesdir_text.editingFinished.connect(self.featurefilesdir_changed)
+        self.set_featurefilesdir(self.base_features_path)
+        self._featurefilesdir_text.editingFinished.connect(
+            self.featurefilesdir_changed
+        )
         featurefilesdir_browse_btn = QtGui.QToolButton()
         featurefilesdir_browse_btn.setText("...")
-        featurefilesdir_browse_btn.clicked.connect(self._select_featurefilesdir)
+        featurefilesdir_browse_btn.clicked.connect(
+            self._select_featurefilesdir
+        )
 
         # buttons
         self._buttons = QtGui.QDialogButtonBox(self)
@@ -128,7 +138,12 @@ class TaskPanelBimTester(QtGui.QWidget):
 
     @QtCore.Slot()
     def _select_ifcfile(self):
-        ifcfile = QtGui.QFileDialog.getOpenFileName(self)[0]
+        # print(self.get_ifcfile())
+        # print(os.path.isfile(self.get_ifcfile()))
+        ifcfile = QtGui.QFileDialog.getOpenFileName(
+            self,
+            dir=self.get_ifcfile()
+        )[0]
         self.set_ifcfile(ifcfile)
         self.ifcfile_changed.emit()
 
@@ -141,8 +156,17 @@ class TaskPanelBimTester(QtGui.QWidget):
 
     @QtCore.Slot()
     def _select_featurefilesdir(self):
-        path = QtGui.QFileDialog.getExistingDirectory(self)
-        self.set_featurefilesdir(path)
+        thedir = self._featurefilesdir_text.text()
+        # print(thedir)
+        # print(os.path.isdir(thedir))
+        # hidden directories are only shown if the option is set
+        features_path = QtGui.QFileDialog.getExistingDirectory(
+            self,
+            caption="Choose features directory ...",
+            dir=thedir,
+            options=QtGui.QFileDialog.HideNameFilterDetails
+        )
+        self.set_featurefilesdir(features_path)
         self.featurefilesdir_changed.emit()
 
     @QtCore.Slot(float)
