@@ -86,12 +86,18 @@ class TaskPanelBimTester(QtGui.QWidget):
         ifcfile_browse_btn.clicked.connect(self._select_ifcfile)
 
         # beside button
-        ffifc_str = "Feature files beside IFC file. Feature files shuld be in a directory features."
+        ffifc_str = (
+            "Feature files beside IFC file. "
+            "Feature files shuld be in a directory features."
+        )
         featuredirfromifc_label = QtGui.QLabel(ffifc_str, self)
         self._featuredirfromifc_cb = QtGui.QCheckBox(self)
 
         # feature files path
-        _ffdir_str = "Feature files directory. Feature files shuld be in a directory features."
+        _ffdir_str = (
+            "Feature files directory. "
+            "Feature files shuld be in a directory features."
+        )
         featurefilesdir_label = QtGui.QLabel(_ffdir_str, self)
         self._featurefilesdir_text = QtGui.QLineEdit()
         self.set_featurefilesdir(self.base_features_path)
