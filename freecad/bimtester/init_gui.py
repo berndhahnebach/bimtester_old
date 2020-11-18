@@ -20,7 +20,7 @@
 # ***************************************************************************
 
 # import importlib
-# import os
+import os
 
 # import FreeCAD
 import FreeCADGui as Gui
@@ -34,6 +34,8 @@ class BIMTester(Gui.Workbench):
     Class which gets initiated at startup of the FreeCAD GUI.
     """
 
+    from freecad.bimtester import module_path
+    Icon = os.path.join(module_path, "resources", "icons", "bimtester.svg")
     MenuText = wbname
     ToolTip = "ToolTip for {}".format(wbname)
 
@@ -64,8 +66,9 @@ class TOOL1():
 
 
     def GetResources(self):
+        from freecad.bimtester import module_path
         return {
-            "Pixmap": "python",
+            "Pixmap": os.path.join(module_path, "resources", "icons", "bimtester.svg"),
             "MenuText": "TOOL1",
             "ToolTip": "Start BIMTester task panel"
         }

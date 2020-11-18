@@ -23,6 +23,7 @@ import os
 
 from PySide import QtCore
 from PySide import QtGui
+from PySide import QtSvg
 
 import FreeCADGui
 
@@ -77,6 +78,27 @@ class TaskPanelBimTester(QtGui.QWidget):
         # the browse button opens a file dialog, which will set the line edit
         # see solver frame work task panel in FEM
 
+        # icon
+        from freecad.bimtester import module_path
+        """
+        # svg
+        # https://stackoverflow.com/a/35138314
+        theicon = QtSvg.QSvgWidget(
+            os.path.join(module_path, "resources", "icons", "bimtester.svg")
+        )
+        # none works ... 
+        #theicon.setGeometry(20,20,200,200)
+        #theicon.setSizePolicy(QtGui.QSizePolicy.Policy.Maximum, QtGui.QSizePolicy.Policy.Maximum)
+        #theicon.sizeHint()
+        """
+        # pixmap
+        theicon = QtGui.QLabel(self)
+        iconpixmap = QtGui.QPixmap(
+            os.path.join(module_path, "resources", "icons", "bimtester.svg")
+        )
+        iconpixmap = iconpixmap.scaled(100, 100, QtCore.Qt.KeepAspectRatio)
+        theicon.setPixmap(iconpixmap)
+
         # ifc file
         ifcfile_label = QtGui.QLabel("IFC file", self)
         self._ifcfile_text = QtGui.QLineEdit()
@@ -88,7 +110,7 @@ class TaskPanelBimTester(QtGui.QWidget):
         # beside button
         ffifc_str = (
             "Feature files beside IFC file. "
-            "Feature files shuld be in a directory features."
+            "Feature files in directory features."
         )
         featuredirfromifc_label = QtGui.QLabel(ffifc_str, self)
         self._featuredirfromifc_cb = QtGui.QCheckBox(self)
@@ -96,7 +118,7 @@ class TaskPanelBimTester(QtGui.QWidget):
         # feature files path
         _ffdir_str = (
             "Feature files directory. "
-            "Feature files shuld be in a directory features."
+            "Feature files in directory features."
         )
         featurefilesdir_label = QtGui.QLabel(_ffdir_str, self)
         self._featurefilesdir_text = QtGui.QLineEdit()
@@ -129,16 +151,19 @@ class TaskPanelBimTester(QtGui.QWidget):
 
         # Layout:
         layout = QtGui.QGridLayout()
-        layout.addWidget(ifcfile_label, 1, 0)
-        layout.addWidget(self._ifcfile_text, 2, 0)
-        layout.addWidget(ifcfile_browse_btn, 2, 1)
-        layout.addWidget(featuredirfromifc_label, 3, 0)
-        layout.addWidget(self._featuredirfromifc_cb, 4, 0)
-        layout.addWidget(featurefilesdir_label, 5, 0)
-        layout.addWidget(self._featurefilesdir_text, 6, 0)
-        layout.addWidget(featurefilesdir_browse_btn, 6, 1)
+        layout.addWidget(theicon, 1, 0, alignment=QtCore.Qt.AlignRight)
+        layout.addWidget(ifcfile_label, 2, 0)
+        layout.addWidget(self._ifcfile_text, 3, 0)
+        layout.addWidget(ifcfile_browse_btn, 3, 1)
+        layout.addWidget(featurefilesdir_label, 4, 0)
+        layout.addWidget(self._featurefilesdir_text,5, 0)
+        layout.addWidget(featurefilesdir_browse_btn, 5, 1)
+        layout.addWidget(featuredirfromifc_label, 6, 0)
+        layout.addWidget(self._featuredirfromifc_cb, 6, 1)
         layout.addWidget(self._buttons, 7, 0)
         # row stretches by 10 compared to the others, std is 0
+        # first parameter is the row number
+        # second is the stretch factor. 
         layout.setRowStretch(0, 10)
         self.setLayout(layout)
 

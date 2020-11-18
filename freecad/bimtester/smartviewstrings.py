@@ -38,9 +38,9 @@ smartview_string_before = """<?xml version="1.0"?>
             <SMARTVIEW>
                 <TITLE>Filter GUID</TITLE>
                 <DESCRIPTION></DESCRIPTION>
-                <CREATOR>b.hahnebach@jpbi.ch</CREATOR>
+                <CREATOR>bernd@bimstatik.ch</CREATOR>
                 <CREATIONDATE>2020-10-30T13:18:45</CREATIONDATE>
-                <MODIFIER>b.hahnebach@jpbi.ch</MODIFIER>
+                <MODIFIER>bernd@bimstatik.ch</MODIFIER>
                 <MODIFICATIONDATE>2020-10-30T13:23:30</MODIFICATIONDATE>
                 <GUID>15fda94f-b4bf-43be-8ef4-15d3121137e1</GUID>
                 <RULES>
