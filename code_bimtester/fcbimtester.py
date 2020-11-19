@@ -29,9 +29,8 @@ import tempfile
 # import FreeCAD
 
 # get bimtester source code module path
-import code_bimtester
-bimtester_path = os.path.split(code_bimtester.__file__)[0]
-print(bimtester_path)
+bimtester_path = os.path.dirname(os.path.realpath(__file__))
+# print(bimtester_path)
 
 
 """
@@ -197,13 +196,11 @@ def run_intmp_tests(args={}):
 
 
 def generate_report(adir=None):
-    import sys
-    sys.path.append(bimtester_path)
-    import bimtester
+    from .bimtester import generate_report
     if adir is None:
-        bimtester.generate_report()
+        generate_report()
     else:
-        bimtester.generate_report(adir)
+        generate_report(adir)
 
 
 def run_all(the_features_path, the_ifcfile_path, the_ifcfile_name):
@@ -215,10 +212,10 @@ def run_all(the_features_path, the_ifcfile_path, the_ifcfile_name):
     print(feature_files)
 
     # setup log
-    from .utils import get_logfile_path
-    logfile = open(get_logfile_path(), "w")
-    logfile.write("BimTester log file\n\n")
-    logfile.close()
+    #from .utilsbimtester import get_logfile_path
+    #logfile = open(get_logfile_path(), "w")
+    #logfile.write("BimTester log file\n\n")
+    #logfile.close()
 
     # run bimtester
     runpath = run_intmp_tests({
@@ -226,11 +223,6 @@ def run_all(the_features_path, the_ifcfile_path, the_ifcfile_name):
         "ifcpath": the_ifcfile_path,
         "ifcfilename": the_ifcfile_name
     })
-
-    # clean
-    # TODO purging ... see ifcos bimtester
-    # delete steps
-    # shutil.rmtree(os.path.join(runpath, "features", "steps"))
 
     # create html report
     generate_report(runpath)

@@ -65,10 +65,14 @@ def get_smartview_path():
 
 def create_zoom_smartview(false_elements_guid):
 
-    from .smartviewstrings import smartview_string_before
-    from .smartviewstrings import smartview_string_after
-    from .smartviewstrings import rule_string_before
-    from .smartviewstrings import rule_string_after
+    print(__file__)
+    print(__file__)
+    print(__file__)
+    print(__file__)
+    from helpersmartviewstrings import smartview_string_before
+    from helpersmartviewstrings import smartview_string_after
+    from helpersmartviewstrings import rule_string_before
+    from helpersmartviewstrings import rule_string_after
 
     smartviewpath = get_smartview_path()
     smf = open(smartviewpath, "a")

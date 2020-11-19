@@ -19,29 +19,51 @@
 # *                                                                         *
 # ***************************************************************************
 
-import os
+import sys
+from PySide2 import QtWidgets
 
-from PySide import QtCore
-from PySide import QtGui
-
-import FreeCADGui
-
-from code_bimtester import guiwidget
+from code_bimtester.guiwidget import TaskPanelBimTester
 
 
 """
-from freecad.bimtester import task_panel as tp
-import importlib
-importlib.reload(tp)
-tp.show_panel()
+# this module has to be here and not inside the code_bimtester package
+# https://stackoverflow.com/questions/16981921/relative-imports-in-python-3
+
+# outside FreeCAD in a shell
+python3 /home/hugo/.FreeCAD/Mod/bimtester/guistartbimtester.py
+
+
+# outside FreeCAD inside Python
+import sys
+sys.path.append("/home/hugo/.FreeCAD/Mod/bimtester/")
+from  guistartbimtester import show_widget
+show_widget()
+
+
+# inside FreeCAD
+import sys
+from PySide2 import QtWidgets
+from code_bimtester.guiwidget import TaskPanelBimTester
+app = QtWidgets.QApplication(sys.argv)
+form = TaskPanelBimTester()
+form.show()
+# sys.exit(app.exec_())
 
 """
 
 
-def show_panel():
-    QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-    mw = FreeCADGui.getMainWindow()
-    awidget = QtGui.QDockWidget("BimTesterGui", mw)
-    awidget.setWidget(guiwidget.TaskPanelBimTester())
-    mw.addDockWidget(QtCore.Qt.RightDockWidgetArea, awidget)
-    QtGui.QApplication.restoreOverrideCursor()
+def show_widget():
+
+    # Create the Qt Application
+    app = QtWidgets.QApplication(sys.argv)
+
+    # Create and show the form
+    form = TaskPanelBimTester()
+    form.show()
+
+    # Run the main Qt loop
+    sys.exit(app.exec_())
+
+
+if __name__ == '__main__':
+    show_widget()

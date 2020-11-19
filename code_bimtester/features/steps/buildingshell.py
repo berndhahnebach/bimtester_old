@@ -1,10 +1,13 @@
 from behave import step
 from utils import IfcFile
 
-from code_bimtester.utils import get_logfile_path
+
+# these modules will be copied to tmp and run from there
+# print("hehe {} hehe".format(__file__))
+from helpertools import get_logfile_path
 mylog = get_logfile_path()
 
- 
+
 @step('all {ifc_class} elements have an {aproperty} property in the {pset} pset')
 def step_impl(context, ifc_class, aproperty, pset):
     # TODO how to redirect prints, See fcbimtester module
@@ -57,6 +60,6 @@ def step_impl(context, attribute, myattributesum):
     logfile.write("{}\n".format(sorted(false_elements_id)))
     logfile.close()
     if len(false_elements_id) > 0:
-        from code_bimtester.utils import create_zoom_smartview
-        create_zoom_smartview(false_elements_guid)
+        from helpertools import create_zoom_smartview
+        # create_zoom_smartview(false_elements_guid)
         assert False, 'Some elemets missing the pset or property: {}, {}'.format(false_elements_id, false_elements_guid)
