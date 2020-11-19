@@ -1,12 +1,15 @@
 from behave import step
 from utils import IfcFile
 
-#from code_bimtester.utils import get_logfile_path
-#mylog = get_logfile_path()
-mylog = "/tmp/mylog"
+# these modules will be copied to tmp and run from there
+# print("hehe {} hehe".format(__file__))
+from helpertools import get_logfile_path
+mylog = get_logfile_path()
+
 
 @step("there are no {ifc_class} elements because {reason}")
 def step_impl(context, ifc_class, reason):
+    print("List of {}: {}".format(ifc_class, IfcFile.get().by_type(ifc_class)))
     assert len(IfcFile.get().by_type(ifc_class)) == 0
 
 
