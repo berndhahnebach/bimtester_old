@@ -21,51 +21,6 @@
 
 import os
 import platform
-import shutil
-
-import FreeCADGui
-
-
-def run_all(the_features_path, the_ifcfile_path, the_ifcfile_name):
-
-    # feature files
-    feature_files = os.listdir(
-        os.path.join(the_features_path, "features")
-    )
-    print(feature_files)
-
-    # setup log
-    logfile = open(get_logfile_path(), "w")
-    logfile.write("BimTester log file\n\n")
-    logfile.close()
-
-    # run bimtester
-    from code_bimtester import fcbimtester
-    runpath = fcbimtester.run_intmp_tests({
-        "features": the_features_path,
-        "ifcpath": the_ifcfile_path,
-        "ifcfilename": the_ifcfile_name
-    })
-
-    # clean
-    # TODO purging ... see ifcos bimtester
-    # delete steps
-    # shutil.rmtree(os.path.join(runpath, "features", "steps"))
-
-    # create html report
-    fcbimtester.generate_report(runpath)
-    print(runpath)
-
-    # open the webbrowser, shoul be separated as well
-    import webbrowser
-    for ff in feature_files:
-        webbrowser.open(os.path.join(
-            runpath,
-            "report",
-            ff + ".html"
-        ))
-
-    return True
 
 
 def get_logfile_path():
@@ -110,10 +65,10 @@ def get_smartview_path():
 
 def create_zoom_smartview(false_elements_guid):
 
-    from freecad.bimtester.smartviewstrings import smartview_string_before
-    from freecad.bimtester.smartviewstrings import smartview_string_after
-    from freecad.bimtester.smartviewstrings import rule_string_before
-    from freecad.bimtester.smartviewstrings import rule_string_after
+    from .smartviewstrings import smartview_string_before
+    from .smartviewstrings import smartview_string_after
+    from .smartviewstrings import rule_string_before
+    from .smartviewstrings import rule_string_after
 
     smartviewpath = get_smartview_path()
     smf = open(smartviewpath, "a")

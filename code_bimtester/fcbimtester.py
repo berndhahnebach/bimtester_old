@@ -35,6 +35,8 @@ print(bimtester_path)
 
 
 """
+# TODO add example code to use run_all method
+
 from freecad.bimtester import fcbimtester
 myfeatures_path = "/home/hugo/Desktop/zeug/SEER_FC/"
 myfeatures_path = "/home/hugo/Desktop/zeug/ifcos_bimtester/bimtester/myrun"
@@ -202,3 +204,45 @@ def generate_report(adir=None):
         bimtester.generate_report()
     else:
         bimtester.generate_report(adir)
+
+
+def run_all(the_features_path, the_ifcfile_path, the_ifcfile_name):
+
+    # feature files
+    feature_files = os.listdir(
+        os.path.join(the_features_path, "features")
+    )
+    print(feature_files)
+
+    # setup log
+    from .utils import get_logfile_path
+    logfile = open(get_logfile_path(), "w")
+    logfile.write("BimTester log file\n\n")
+    logfile.close()
+
+    # run bimtester
+    runpath = run_intmp_tests({
+        "features": the_features_path,
+        "ifcpath": the_ifcfile_path,
+        "ifcfilename": the_ifcfile_name
+    })
+
+    # clean
+    # TODO purging ... see ifcos bimtester
+    # delete steps
+    # shutil.rmtree(os.path.join(runpath, "features", "steps"))
+
+    # create html report
+    generate_report(runpath)
+    print(runpath)
+
+    # open the webbrowser, shoul be separated as well
+    import webbrowser
+    for ff in feature_files:
+        webbrowser.open(os.path.join(
+            runpath,
+            "report",
+            ff + ".html"
+        ))
+
+    return True

@@ -236,7 +236,7 @@ class TaskPanelBimTester(QtGui.QWidget):
 
         # run bimtester
         print("start bimtester")
-        from freecad.bimtester.utils import run_all
+        from code_bimtester.fcbimtester import run_all
         status = run_all(
             the_features_path,
             the_ifcfile_path,

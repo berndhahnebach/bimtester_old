@@ -1,7 +1,7 @@
 from behave import step
 from utils import IfcFile
 
-from freecad.bimtester.utils import get_logfile_path
+from code_bimtester.utils import get_logfile_path
 mylog = get_logfile_path()
 
  
@@ -57,6 +57,6 @@ def step_impl(context, attribute, myattributesum):
     logfile.write("{}\n".format(sorted(false_elements_id)))
     logfile.close()
     if len(false_elements_id) > 0:
-        from freecad.bimtester.utils import create_zoom_smartview
+        from code_bimtester.utils import create_zoom_smartview
         create_zoom_smartview(false_elements_guid)
         assert False, 'Some elemets missing the pset or property: {}, {}'.format(false_elements_id, false_elements_guid)
