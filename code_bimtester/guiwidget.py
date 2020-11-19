@@ -90,6 +90,8 @@ class TaskPanelBimTester(QtWidgets.QWidget):
         ifcfile_label = QtWidgets.QLabel("IFC file", self)
         self._ifcfile_text = QtWidgets.QLineEdit()
         self._ifcfile_text.editingFinished.connect(self.ifcfile_changed)
+        mystandardifc = "/home/hugo/Documents/zeug_sort/z_some_ifc/3_15025_KiGa_ING_N_TRW.ifc"
+        self._ifcfile_text.setText(mystandardifc)
         ifcfile_browse_btn = QtWidgets.QToolButton()
         ifcfile_browse_btn.setText("...")
         ifcfile_browse_btn.clicked.connect(self._select_ifcfile)
@@ -160,8 +162,7 @@ class TaskPanelBimTester(QtWidgets.QWidget):
         # print(os.path.isfile(self.get_ifcfile()))
         ifcfile = QtWidgets.QFileDialog.getOpenFileName(
             self,
-            dir="/home/hugo/Documents/zeug_sort/z_some_ifc/3_15025_KiGa_ING_N_TRW.ifc"
-            #dir=self.get_ifcfile()
+            dir=self.get_ifcfile()
         )[0]
         self.set_ifcfile(ifcfile)
         self.ifcfile_changed.emit()

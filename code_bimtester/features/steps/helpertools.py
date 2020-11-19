@@ -65,10 +65,6 @@ def get_smartview_path():
 
 def create_zoom_smartview(false_elements_guid):
 
-    print(__file__)
-    print(__file__)
-    print(__file__)
-    print(__file__)
     from helpersmartviewstrings import smartview_string_before
     from helpersmartviewstrings import smartview_string_after
     from helpersmartviewstrings import rule_string_before
