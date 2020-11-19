@@ -31,6 +31,8 @@ from code_bimtester.guiwidget import TaskPanelBimTester
 
 # outside FreeCAD in a shell
 python3 /home/hugo/.FreeCAD/Mod/bimtester/guistartbimtester.py
+python C:\Users\BHA\AppData\Roaming\FreeCAD\Mod\bimtester\guistartbimtester.py
+# behave pystache etc needs to be installed on windows (anaconda) if outside FreeCAD
 
 
 # outside FreeCAD inside Python
