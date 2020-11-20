@@ -84,17 +84,23 @@ def step_impl(context):
     settings.set(settings.SEW_SHELLS,True)
     settings.set(settings.USE_WORLD_COORDS,True)
     import Part  # FreeCAD is needed
-    from bimstatiktools.geomchecks import checkSolidGeometry  # bernds geometry check is needed
+    from bimstatiktools import geomchecks
+    import importlib
+    importlib.reload(geomchecks)
+    # bernds geometry check is needed
     false_elements_error = {}
 
     for elem in elements:
-        # TODO: update gui and or flush io, because on bigger modells this takes time ...
+        # TODO: update gui and or flush io, this could take time ...
         cr = ifcgeom.create_shape(settings, elem)
         brep = cr.geometry.brep_data
         shape = Part.Shape()
         shape.importBrepFromString(brep)
-        error = checkSolidGeometry(shape)
+        shape.scale(1000.0)  # IfcOpenShell always outputs in meters
+        error = geomchecks.checkSolidGeometry(shape)
         if error != "":
+            print(error)
+            Part.show(shape)
             false_elements_error[elem.id()] = error
  
     if len(false_elements_error) > 0:
