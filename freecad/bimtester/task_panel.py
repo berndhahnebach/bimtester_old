@@ -26,13 +26,11 @@ from PySide import QtGui
 
 import FreeCADGui
 
-from code_bimtester import guiwidget
+from code_bimtester.guiwidget import GuiWidgetBimTester as TaskPanel
 
 
 """
 from freecad.bimtester import task_panel as tp
-import importlib
-importlib.reload(tp)
 tp.show_panel()
 
 """
@@ -42,6 +40,6 @@ def show_panel():
     QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
     mw = FreeCADGui.getMainWindow()
     awidget = QtGui.QDockWidget("BimTesterGui", mw)
-    awidget.setWidget(guiwidget.TaskPanelBimTester())
+    awidget.setWidget(TaskPanel())
     mw.addDockWidget(QtCore.Qt.RightDockWidgetArea, awidget)
     QtGui.QApplication.restoreOverrideCursor()

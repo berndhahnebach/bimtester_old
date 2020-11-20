@@ -22,7 +22,7 @@
 import sys
 from PySide2 import QtWidgets
 
-from code_bimtester.guiwidget import TaskPanelBimTester
+from code_bimtester.guiwidget import GuiWidgetBimTester
 
 
 """
@@ -45,12 +45,11 @@ show_widget()
 # inside FreeCAD
 import sys
 from PySide2 import QtWidgets
-from code_bimtester.guiwidget import TaskPanelBimTester
+from code_bimtester.guiwidget import GuiWidgetBimTester
 app = QtWidgets.QApplication(sys.argv)
-form = TaskPanelBimTester()
+form = GuiWidgetBimTester()
 form.show()
 # sys.exit(app.exec_())
-
 """
 
 
@@ -60,7 +59,7 @@ def show_widget():
     app = QtWidgets.QApplication(sys.argv)
 
     # Create and show the form
-    form = TaskPanelBimTester()
+    form = GuiWidgetBimTester()
     form.show()
 
     # Run the main Qt loop

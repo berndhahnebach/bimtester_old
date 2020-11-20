@@ -19,7 +19,7 @@
 # *                                                                         *
 # ***************************************************************************
 
-# TODO merge into bimtester and make a PR to official bimtester module
+# TODO somehow merge into bimtester and make a PR to official bimtester module
 
 import fileinput
 import os
@@ -34,29 +34,36 @@ bimtester_path = os.path.dirname(os.path.realpath(__file__))
 
 
 """
-# TODO add example code to use run_all method
-
-from freecad.bimtester import fcbimtester
-myfeatures_path = "/home/hugo/Desktop/zeug/SEER_FC/"
-myfeatures_path = "/home/hugo/Desktop/zeug/ifcos_bimtester/bimtester/myrun"
-myifcfile_path = myfeatures_path
-runpath = fcbimtester.run_intmp_tests({"features": myfeatures_path, "ifcpath": myifcfile_path})
-fcbimtester.generate_report(runpath)
-
 from code_bimtester import fcbimtester
 myfeatures_path = "/home/hugo/.FreeCAD/Mod/bimtester/features_bimtester/"
 myifcfile_path = "/home/hugo/Documents/zeug_sort/z_some_ifc/"
 ifcfilename = "3_15025_KiGa_ING_N_TRW.ifc"
+fcbimtester.run_all(myfeatures_path, myifcfile_path, ifcfilename)
+
+or 
+
 runpath = fcbimtester.run_intmp_tests({"features": myfeatures_path, "ifcpath": myifcfile_path, "ifcfilename": ifcfilename})
 fcbimtester.generate_report(runpath)
+
+
+from code_bimtester import fcbimtester
+myfeatures_path = "/home/hugo/Documents/zeug_sort/ifcos_bimtester/myrun/"
+fcbimtester.run_all(myfeatures_path, myfeatures_path)
+
+or
+
+runpath = fcbimtester.run_intmp_tests({"features": myfeatures_path, "ifcpath": myfeatures_path})
+fcbimtester.generate_report(runpath)
+
+
 
 """
 
 """
 # clean logs to be able to run tests
 # once again but on another building model and in another directory
-# somehow does not work, thus test will be rund in the same directory
-# directory will be deleted before each new run
+# somehow does not work, thus test will be run in the same directory
+# on each new run, directory will be deleted before each new run
 # https://github.com/behave/behave/issues/871
 # run bimtester
 # copy manually this code, run code again, does not work
@@ -203,32 +210,32 @@ def generate_report(adir=None):
         generate_report(adir)
 
 
-def run_all(the_features_path, the_ifcfile_path, the_ifcfile_name):
+def run_all(the_features_path, the_ifcfile_path, the_ifcfile_name=None):
 
     # feature files
     feature_files = os.listdir(
         os.path.join(the_features_path, "features")
     )
-    print(feature_files)
-
-    # setup log
-    #from .utilsbimtester import get_logfile_path
-    #logfile = open(get_logfile_path(), "w")
-    #logfile.write("BimTester log file\n\n")
-    #logfile.close()
+    # print(feature_files)
 
     # run bimtester
-    runpath = run_intmp_tests({
-        "features": the_features_path,
-        "ifcpath": the_ifcfile_path,
-        "ifcfilename": the_ifcfile_name
-    })
+    if the_ifcfile_name is None:
+        runpath = run_intmp_tests({
+            "features": the_features_path,
+            "ifcpath": the_ifcfile_path
+        })
+    else:
+        runpath = run_intmp_tests({
+            "features": the_features_path,
+            "ifcpath": the_ifcfile_path,
+            "ifcfilename": the_ifcfile_name
+        })
 
     # create html report
     generate_report(runpath)
-    print(runpath)
+    # print(runpath)
 
-    # open the webbrowser, shoul be separated as well
+    # open the webbrowser
     import webbrowser
     for ff in feature_files:
         webbrowser.open(os.path.join(
