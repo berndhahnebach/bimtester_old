@@ -24,69 +24,30 @@ import platform
 
 import helpersmartviewstrings as hss
 
-def get_logfile_path():
 
-    logfilename = "mybimtesterlog.log"
-    if platform.system() == "Windows":
-        logfilepath = os.path.join(
-            os.path.expanduser('~'),
-            'Desktop',
-            logfilename
+# try to add the method to context in environment
+# this module would be not needed anymore
+
+
+def append_zoom_smartview(sm_file, scenario_name, false_elements_guid):
+
+    smf = open(sm_file, "a")
+
+    # each_smartview_string_title
+    smf.write("            <SMARTVIEW>\n")
+    smf.write(
+        "                <TITLE>{}, Filter GUID</TITLE>\n"
+        .format(scenario_name)
+    )
+    smf.write("                <DESCRIPTION></DESCRIPTION>\n")
+    smf.write("{}\n".format(hss.each_smartview_string_before))
+    for guid in false_elements_guid:
+        smf.write(
+            "{}{}{}\n".format(
+                hss.rule_string_before,
+                guid,
+                hss.rule_string_after)
         )
-        # logfilepath = "C:/Users/BHA/AppData/Local/Temp/mybimtesterlog.log"
-        # logfilepath = "C:/Users/BHA/Desktop/mybimtesterlog.log"
-    elif platform.system() == "Linux":
-        logfilepath = os.path.join("/", "tmp", logfilename)
-    else:
-        pass
-        # darwin not supported (OSX)
-    print(logfilepath)
-
-    return logfilepath
-
-
-def get_smartview_path(scenario_name):
-
-    smartviewname = "zoomsmartview_{}.bcsv".format(scenario_name)
-    if platform.system() == "Windows":
-        smartviewpath = os.path.join(
-            os.path.expanduser('~'),
-            'Desktop',
-            smartviewname
-        )
-    elif platform.system() == "Linux":
-        smartviewpath = os.path.join("/", "tmp", smartviewname)
-    else:
-        pass
-        # darwin not supported (OSX)
-    print(smartviewpath)
-
-    return smartviewpath
-
-
-def create_zoom_smartview(scenario_name, false_elements_guid):
-
-    smartviewpath = get_smartview_path(scenario_name)
-    smf = open(smartviewpath, "w")
-
-    # TODO pass all scenarios and features
-    scenarios = [scenario_name]
-
-    smf.write("{}\n".format(hss.smartviews_string_before))
-    for scenar in scenarios:
-        # each_smartview_string_title
-        smf.write("            <SMARTVIEW>\n")
-        smf.write("                <TITLE>{}, Filter GUID</TITLE>\n".format(scenar))
-        smf.write("                <DESCRIPTION></DESCRIPTION>\n")
-        smf.write("{}\n".format(hss.each_smartview_string_before))
-        for guid in false_elements_guid:
-            smf.write(
-                "{}{}{}\n".format(
-                    hss.rule_string_before,
-                    guid,
-                    hss.rule_string_after)
-            )
-        smf.write("{}\n".format(hss.each_smartview_string_after))
-    smf.write("{}\n".format(hss.smartviews_string_after))
+    smf.write("{}\n".format(hss.each_smartview_string_after))
 
     smf.close()

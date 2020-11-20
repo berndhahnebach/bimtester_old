@@ -44,7 +44,7 @@ myifcfile_path = "/home/hugo/Documents/zeug_sort/z_some_ifc/"
 ifcfilename = "3_15025_KiGa_ING_N_TRW.ifc"
 fcbimtester.run_all(myfeatures_path, myifcfile_path, ifcfilename)
 
-or 
+or
 
 runpath = fcbimtester.run_intmp_tests({"features": myfeatures_path, "ifcpath": myifcfile_path, "ifcfilename": ifcfilename})
 fcbimtester.generate_report(runpath)
@@ -170,12 +170,27 @@ def run_intmp_tests(args={}):
                 # the print replaces the line in the file
                 print(line.replace(theline, newifcline), end="")
 
-    # copy step files
-    steps_path = os.path.join(bimtester_path,  "features", "steps")
+    # copy step files and environment file
+    steps_path = os.path.join(
+        bimtester_path,
+        "features",
+        "steps"
+    )
     # print(steps_path)
     # print(copy_steps_path)
     if os.path.exists(steps_path):
         shutil.copytree(steps_path, copy_steps_path)
+
+    environment_file = os.path.join(
+        bimtester_path,
+        "features",
+        "environment.py"
+    )
+    if os.path.isfile(environment_file):
+        shutil.copyfile(
+            environment_file,
+            os.path.join(copy_features_path, "environment.py")
+        )
 
     # get advanced args
     # print to console from inside step files, add "--no-capture" flag

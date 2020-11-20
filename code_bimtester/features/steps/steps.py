@@ -2,11 +2,6 @@ from behave import step
 from utils import IfcFile
 
 
-# TODO fix logging: see buildingshell step ...
-from helpertools import get_logfile_path
-mylog = get_logfile_path()
-
-
 @step("there are no {ifc_class} elements because {reason}")
 def step_impl(context, ifc_class, reason):
     elements = IfcFile.get().by_type(ifc_class)
@@ -26,7 +21,7 @@ def step_impl(context, ifc_class, pattern):
 
 @step("all {ifc_class} elements have an {representation_class} representation")
 def step_impl(context, ifc_class, representation_class):
-    logfile = open(mylog, "a")
+    logfile = open(context.thelogfile, "a")
     logfile.write("representation test\n")
     def is_item_a_representation(item, representation):
         if "/" in representation:

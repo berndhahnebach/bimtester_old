@@ -1,14 +1,7 @@
 from behave import step
 from utils import IfcFile
 
-
-# TODO: how about the log file? Overhead or do I need it?
-# logging the begave way ...
-# https://behave.readthedocs.io/en/latest/api.html#logging-setup
-# these modules will be copied to tmp and run from there
-# print("hehe {} hehe".format(__file__))
-from helpertools import get_logfile_path
-mylog = get_logfile_path()
+import helpertools
 
 
 # behave needs to be started with a option to redirect prints
@@ -19,7 +12,7 @@ mylog = get_logfile_path()
 
 @step("all {ifc_class} elements have an {aproperty} property in the {pset} pset")
 def step_impl(context, ifc_class, aproperty, pset):
-    logfile = open(mylog, "a")
+    logfile = open(context.thelogfile, "a")
     logfile.write("PropTest: {}, {}, {}\n".format(ifc_class, aproperty, pset))
     elements = IfcFile.get().by_type(ifc_class)
     false_elements_id = []
@@ -52,7 +45,7 @@ def step_impl(context, ifc_class, aproperty, pset):
 # but than the ambiguous problem, thus use different words
 @step("all parts have an {attribute} attribute in the {myattributesum} attributeset")
 def step_impl(context, attribute, myattributesum):
-    logfile = open(mylog, "a")
+    logfile = open(context.thelogfile, "a")
     logfile.write("PropTest: {}, {}\n".format(attribute, myattributesum))
     elements = IfcFile.get().by_type("IfcBuildingElement")
     false_elements_id = []
@@ -67,11 +60,11 @@ def step_impl(context, attribute, myattributesum):
     logfile.write("{}\n".format(sorted(false_elements_id)))
     logfile.close()
     if len(false_elements_id) > 0:
-        from helpertools import create_zoom_smartview
-        create_zoom_smartview(context.scenario.name, false_elements_guid)
-        # https://stackoverflow.com/a/31545036
-        # https://behave.readthedocs.io/en/latest/tutorial.html#environmental-controls
-        print("Failed scenario: {}".format(context.scenario.name))
+        helpertools.append_zoom_smartview(
+            context.thesmfile,
+            context.scenario.name,
+            false_elements_guid
+        )
         assert False, (
             "Some elemets missing the pset or property: {}, {}"
             .format(false_elements_id, false_elements_guid)
@@ -111,8 +104,11 @@ def step_impl(context):
             false_elements_guid.append(elem.GlobalId)
 
     if len(false_elements_error) > 0:
-        from helpertools import create_zoom_smartview
-        create_zoom_smartview(context.scenario.name, false_elements_guid)
+        helpertools.append_zoom_smartview(
+            context.thesmfile,
+            context.scenario.name,
+            false_elements_guid
+        )
         assert False, (
             "Geometry elements errors: {}"
             .format(false_elements_error)
