@@ -1,4 +1,4 @@
-Feature: Geometric Representations
+Feature: Element classes
 
 In order to correctly display and use objects
 As any interested stakeholder

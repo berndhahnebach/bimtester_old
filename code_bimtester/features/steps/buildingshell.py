@@ -72,3 +72,33 @@ def step_impl(context, attribute, myattributesum):
             "Some elemets missing the pset or property: {}, {}"
             .format(false_elements_id, false_elements_guid)
         )
+
+
+@step("All elements must have a shape without errors")
+def step_impl(context):
+    elements = IfcFile.get().by_type("IfcBuildingElement")
+
+    from ifcopenshell import geom as ifcgeom
+    settings = ifcgeom.settings()
+    settings.set(settings.USE_BREP_DATA,True)
+    settings.set(settings.SEW_SHELLS,True)
+    settings.set(settings.USE_WORLD_COORDS,True)
+    import Part  # FreeCAD is needed
+    from bimstatiktools.geomchecks import checkSolidGeometry  # bernds geometry check is needed
+    false_elements_error = {}
+
+    for elem in elements:
+        # TODO: update gui and or flush io, because on bigger modells this takes time ...
+        cr = ifcgeom.create_shape(settings, elem)
+        brep = cr.geometry.brep_data
+        shape = Part.Shape()
+        shape.importBrepFromString(brep)
+        error = checkSolidGeometry(shape)
+        if error != "":
+            false_elements_error[elem.id()] = error
+ 
+    if len(false_elements_error) > 0:
+        assert False, (
+            "Geometry elements errors: {}"
+            .format(false_elements_error)
+        )

@@ -63,7 +63,7 @@ def step_impl(context, ifc_class, representation_class):
     logfile.write("{}\n".format(sorted(false_elements)))
     logfile.close()
     if len(false_elements) > 0:
-        assert False, "Some elemets are not a IfcFacetedBrep representation: {}".format(false_elements)
+        assert False, "Some elements are not a IfcFacetedBrep representation: {}".format(false_elements)
 
 
 use_step_matcher("re")

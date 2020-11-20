@@ -21,10 +21,3 @@ Scenario: Receiving a file
  * The IFC file "myifc.ifc" must be provided
 
  * IFC data must use the IFC2X3 schema
-
-
-Scenario: Project metadata is organised and correct
-# * The project must have an identifier of 3K5pZ70qH4281XGJUqIX8A
-# * The project name, code, or short identifier must be "My IFC Model"
-# * The project must be described as "My short description"
-
