@@ -1,6 +1,8 @@
 from behave import step
 from utils import IfcFile
 
+
+# TODO: how about the log file? Overhead or do I need it?
 # these modules will be copied to tmp and run from there
 # print("hehe {} hehe".format(__file__))
 from helpertools import get_logfile_path
@@ -9,8 +11,9 @@ mylog = get_logfile_path()
 
 @step("there are no {ifc_class} elements because {reason}")
 def step_impl(context, ifc_class, reason):
-    print("List of {}: {}".format(ifc_class, IfcFile.get().by_type(ifc_class)))
-    assert len(IfcFile.get().by_type(ifc_class)) == 0
+    elements = IfcFile.get().by_type(ifc_class)
+    if len(elements) > 0:
+        assert False, "{} elementss: {}".format(ifc_class, elements)
 
 
 @step('all {ifc_class} elements have a name matching the pattern "{pattern}"')
@@ -60,7 +63,7 @@ def step_impl(context, ifc_class, representation_class):
     logfile.write("{}\n".format(sorted(false_elements)))
     logfile.close()
     if len(false_elements) > 0:
-        assert False, 'Some elemets are not a IfcFacetedBrep representation: {}'.format(false_elements)
+        assert False, "Some elemets are not a IfcFacetedBrep representation: {}".format(false_elements)
 
 
 use_step_matcher("re")
