@@ -3,6 +3,8 @@ from utils import IfcFile
 
 
 # TODO: how about the log file? Overhead or do I need it?
+# logging the begave way ...
+# https://behave.readthedocs.io/en/latest/api.html#logging-setup
 # these modules will be copied to tmp and run from there
 # print("hehe {} hehe".format(__file__))
 from helpertools import get_logfile_path
@@ -47,27 +49,29 @@ def step_impl(context, ifc_class, aproperty, pset):
 
 
 # "all building elements have an {aproperty} property in the {pset} pset")
-# but than the ambigous problem, thus use different words
+# but than the ambiguous problem, thus use different words
 @step("all parts have an {attribute} attribute in the {myattributesum} attributeset")
 def step_impl(context, attribute, myattributesum):
-    # TODO how to redirect prints !!!
     logfile = open(mylog, "a")
     logfile.write("PropTest: {}, {}\n".format(attribute, myattributesum))
     elements = IfcFile.get().by_type("IfcBuildingElement")
     false_elements_id = []
     false_elements_guid = []
     from ifcopenshell.util.element import get_psets
-    for element in elements:
-        psets = get_psets(element)
+    for elem in elements:
+        psets = get_psets(elem)
         if not (myattributesum in psets and attribute in psets[myattributesum]):
-            false_elements_id.append(element.id())
-            false_elements_guid.append(element.GlobalId)
-        logfile.write("{} --> {}\n".format(element.id(), psets))
+            false_elements_id.append(elem.id())
+            false_elements_guid.append(elem.GlobalId)
+        logfile.write("{} --> {}\n".format(elem.id(), psets))
     logfile.write("{}\n".format(sorted(false_elements_id)))
     logfile.close()
     if len(false_elements_id) > 0:
         from helpertools import create_zoom_smartview
-        # create_zoom_smartview(false_elements_guid)
+        create_zoom_smartview(context.scenario.name, false_elements_guid)
+        # https://stackoverflow.com/a/31545036
+        # https://behave.readthedocs.io/en/latest/tutorial.html#environmental-controls
+        print("Failed scenario: {}".format(context.scenario.name))
         assert False, (
             "Some elemets missing the pset or property: {}, {}"
             .format(false_elements_id, false_elements_guid)
@@ -78,20 +82,22 @@ def step_impl(context, attribute, myattributesum):
 def step_impl(context):
     elements = IfcFile.get().by_type("IfcBuildingElement")
 
+    import Part  # FreeCAD is needed
+    # bernds geometry check is needed
+    from bimstatiktools import geomchecks
+    from importlib import reload
+    reload(geomchecks)
+
     from ifcopenshell import geom as ifcgeom
     settings = ifcgeom.settings()
     settings.set(settings.USE_BREP_DATA,True)
     settings.set(settings.SEW_SHELLS,True)
     settings.set(settings.USE_WORLD_COORDS,True)
-    import Part  # FreeCAD is needed
-    from bimstatiktools import geomchecks
-    import importlib
-    importlib.reload(geomchecks)
-    # bernds geometry check is needed
-    false_elements_error = {}
 
+    false_elements_error = {}
+    false_elements_guid = []
     for elem in elements:
-        # TODO: update gui and or flush io, this could take time ...
+        # TODO: some print and update gui and or flush, this could take time
         cr = ifcgeom.create_shape(settings, elem)
         brep = cr.geometry.brep_data
         shape = Part.Shape()
@@ -102,8 +108,11 @@ def step_impl(context):
             print(error)
             Part.show(shape)
             false_elements_error[elem.id()] = error
- 
+            false_elements_guid.append(elem.GlobalId)
+
     if len(false_elements_error) > 0:
+        from helpertools import create_zoom_smartview
+        create_zoom_smartview(context.scenario.name, false_elements_guid)
         assert False, (
             "Geometry elements errors: {}"
             .format(false_elements_error)

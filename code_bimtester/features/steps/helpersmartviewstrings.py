@@ -22,23 +22,10 @@ rule_string_after = """</VALUE>
                         </ACTION>
                     </RULE>"""
 
-smartview_string_before = """<?xml version="1.0"?>
-<bimcollabsmartviewfile>
-    <version>5</version>
-    <applicationversion>Win - Version: 3.4 (build 3.4.13.559)</applicationversion>
-</bimcollabsmartviewfile>
-
-<SMARTVIEWSETS>
-    <SMARTVIEWSET>
-        <TITLE>bimtester</TITLE>
-        <DESCRIPTION></DESCRIPTION>
-        <GUID>a2ddfaf7-97f2-4519-aabd-f2d94f6b4d6b</GUID>
-        <MODIFICATIONDATE>2020-10-30T13:23:30</MODIFICATIONDATE>
-        <SMARTVIEWS>
-            <SMARTVIEW>
+each_smartview_string_title = """            <SMARTVIEW>
                 <TITLE>Filter GUID</TITLE>
-                <DESCRIPTION></DESCRIPTION>
-                <CREATOR>bernd@bimstatik.ch</CREATOR>
+                <DESCRIPTION></DESCRIPTION>"""
+each_smartview_string_before = """                <CREATOR>bernd@bimstatik.ch</CREATOR>
                 <CREATIONDATE>2020-10-30T13:18:45</CREATIONDATE>
                 <MODIFIER>bernd@bimstatik.ch</MODIFIER>
                 <MODIFICATIONDATE>2020-10-30T13:23:30</MODIFICATIONDATE>
@@ -82,13 +69,28 @@ smartview_string_before = """<?xml version="1.0"?>
                         </ACTION>
                     </RULE>"""
 
-smartview_string_after = """                </RULES>
+each_smartview_string_after = """                </RULES>
                 <INFORMATIONTAKEOFF>
                     <PROPERTYSETNAME>None</PROPERTYSETNAME>
                     <PROPERTYNAME>None</PROPERTYNAME>
                     <OPERATION>0</OPERATION>
                 </INFORMATIONTAKEOFF>
-            </SMARTVIEW>
-        </SMARTVIEWS>
+            </SMARTVIEW>"""
+
+smartviews_string_before = """<?xml version="1.0"?>
+<bimcollabsmartviewfile>
+    <version>5</version>
+    <applicationversion>Win - Version: 3.4 (build 3.4.13.559)</applicationversion>
+</bimcollabsmartviewfile>
+
+<SMARTVIEWSETS>
+    <SMARTVIEWSET>
+        <TITLE>bimtester</TITLE>
+        <DESCRIPTION></DESCRIPTION>
+        <GUID>a2ddfaf7-97f2-4519-aabd-f2d94f6b4d6b</GUID>
+        <MODIFICATIONDATE>2020-10-30T13:23:30</MODIFICATIONDATE>
+        <SMARTVIEWS>"""
+
+smartviews_string_after = """        </SMARTVIEWS>
     </SMARTVIEWSET>
 </SMARTVIEWSETS>"""

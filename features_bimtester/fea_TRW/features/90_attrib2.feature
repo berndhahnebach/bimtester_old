@@ -9,7 +9,7 @@ Scenario: Receiving a file
  * IFC data must use the IFC2X3 schema
 
 
-Scenario: Ensure my test
+Scenario: Umbaukategorie
 # * All parts have an {property} attribute in the {pset} attributeset
  * All parts have an Umbaukategorie attribute in the AllplanAttributes attributeset
 

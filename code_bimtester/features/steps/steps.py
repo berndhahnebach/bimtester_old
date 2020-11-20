@@ -2,9 +2,7 @@ from behave import step
 from utils import IfcFile
 
 
-# TODO: how about the log file? Overhead or do I need it?
-# these modules will be copied to tmp and run from there
-# print("hehe {} hehe".format(__file__))
+# TODO fix logging: see buildingshell step ...
 from helpertools import get_logfile_path
 mylog = get_logfile_path()
 

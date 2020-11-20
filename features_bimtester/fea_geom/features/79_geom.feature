@@ -15,5 +15,5 @@ Scenario: Ensure all IFC type elements have correct representation
  * All IfcSlab elements have an IfcFacetedBrep representation
 
 
-Scenario: Ensure all elements have correct geometry
+Scenario: geometry_error
  * All elements must have a shape without errors

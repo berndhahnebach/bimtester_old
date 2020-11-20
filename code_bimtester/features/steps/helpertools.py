@@ -22,6 +22,7 @@
 import os
 import platform
 
+import helpersmartviewstrings as hss
 
 def get_logfile_path():
 
@@ -44,9 +45,9 @@ def get_logfile_path():
     return logfilepath
 
 
-def get_smartview_path():
+def get_smartview_path(scenario_name):
 
-    smartviewname = "zoomsmartview.bcsv"
+    smartviewname = "zoomsmartview_{}.bcsv".format(scenario_name)
     if platform.system() == "Windows":
         smartviewpath = os.path.join(
             os.path.expanduser('~'),
@@ -63,17 +64,29 @@ def get_smartview_path():
     return smartviewpath
 
 
-def create_zoom_smartview(false_elements_guid):
+def create_zoom_smartview(scenario_name, false_elements_guid):
 
-    from helpersmartviewstrings import smartview_string_before
-    from helpersmartviewstrings import smartview_string_after
-    from helpersmartviewstrings import rule_string_before
-    from helpersmartviewstrings import rule_string_after
+    smartviewpath = get_smartview_path(scenario_name)
+    smf = open(smartviewpath, "w")
 
-    smartviewpath = get_smartview_path()
-    smf = open(smartviewpath, "a")
-    smf.write("{}\n".format(smartview_string_before))
-    for guid in false_elements_guid:
-        smf.write("{}{}{}\n".format(rule_string_before, guid, rule_string_after))
-    smf.write("{}\n".format(smartview_string_after))
+    # TODO pass all scenarios and features
+    scenarios = [scenario_name]
+
+    smf.write("{}\n".format(hss.smartviews_string_before))
+    for scenar in scenarios:
+        # each_smartview_string_title
+        smf.write("            <SMARTVIEW>\n")
+        smf.write("                <TITLE>{}, Filter GUID</TITLE>\n".format(scenar))
+        smf.write("                <DESCRIPTION></DESCRIPTION>\n")
+        smf.write("{}\n".format(hss.each_smartview_string_before))
+        for guid in false_elements_guid:
+            smf.write(
+                "{}{}{}\n".format(
+                    hss.rule_string_before,
+                    guid,
+                    hss.rule_string_after)
+            )
+        smf.write("{}\n".format(hss.each_smartview_string_after))
+    smf.write("{}\n".format(hss.smartviews_string_after))
+
     smf.close()
