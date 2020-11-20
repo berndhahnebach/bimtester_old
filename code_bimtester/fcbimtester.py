@@ -33,6 +33,10 @@ bimtester_path = os.path.dirname(os.path.realpath(__file__))
 # print(bimtester_path)
 
 
+# TODO: if the ifc file name or path contains special character
+# like German Umlaute behave gives an error
+
+
 """
 from code_bimtester import fcbimtester
 myfeatures_path = "/home/hugo/.FreeCAD/Mod/bimtester/features_bimtester/"
@@ -54,8 +58,6 @@ or
 
 runpath = fcbimtester.run_intmp_tests({"features": myfeatures_path, "ifcpath": myfeatures_path})
 fcbimtester.generate_report(runpath)
-
-
 
 """
 
