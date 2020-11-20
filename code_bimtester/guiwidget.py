@@ -33,13 +33,12 @@ from .fcbimtester import run_all
 
 class GuiWidgetBimTester(QtWidgets.QWidget):
 
-    print(__file__)
     # get some initial values
     initial_ifcfile = "/home/hugo/Documents/zeug_sort/z_some_ifc/3_15025_KiGa_ING_N_TRW.ifc"
-    # import features_bimtester
-    # initial_featurespath = os.path.split(features_bimtester.__file__)[0]
-    # initial_featurespath = "."
-    initial_featurespath = "/home/hugo/.FreeCAD/Mod/bimtester/features_bimtester/fea_min"
+    if not os.path.isfile(initial_ifcfile):
+        initial_ifcfile = os.path.join(os.path.expanduser("~"), "Desktop")
+    this_path = os.path.join(os.path.dirname(__file__))
+    initial_featurespath = os.path.join(this_path, "..", "features_bimtester")
 
     def __init__(self):
         super(GuiWidgetBimTester, self).__init__()
@@ -64,7 +63,7 @@ class GuiWidgetBimTester(QtWidgets.QWidget):
             package_path, "resources", "icons", "bimtester.svg"
         )
         """
-        # svg
+        # as svg
         # https://stackoverflow.com/a/35138314
         theicon = QtSvg.QSvgWidget(iconpath)
         # none works ...
@@ -72,19 +71,19 @@ class GuiWidgetBimTester(QtWidgets.QWidget):
         #theicon.setSizePolicy(QtGui.QSizePolicy.Policy.Maximum, QtGui.QSizePolicy.Policy.Maximum)
         #theicon.sizeHint()
         """
-        # pixmap
+        # as pixmap
         theicon = QtWidgets.QLabel(self)
         iconpixmap = QtGui.QPixmap(iconpath)
         iconpixmap = iconpixmap.scaled(100, 100, QtCore.Qt.KeepAspectRatio)
         theicon.setPixmap(iconpixmap)
 
         # ifc file
-        ifcfile_label = QtWidgets.QLabel("IFC file", self)
-        self._ifcfile_text = QtWidgets.QLineEdit()
+        _ifcfile_label = QtWidgets.QLabel("IFC file", self)
+        self.ifcfile_text = QtWidgets.QLineEdit()
         self.set_ifcfile(self.initial_ifcfile)
-        ifcfile_browse_btn = QtWidgets.QToolButton()
-        ifcfile_browse_btn.setText("...")
-        ifcfile_browse_btn.clicked.connect(self._select_ifcfile)
+        _ifcfile_browse_btn = QtWidgets.QToolButton()
+        _ifcfile_browse_btn.setText("...")
+        _ifcfile_browse_btn.clicked.connect(self.select_ifcfile)
 
         # feature files path
         # use a layout with a frame and a title, see solver framework tp
@@ -94,47 +93,49 @@ class GuiWidgetBimTester(QtWidgets.QWidget):
             "Feature files in directory features."
         )
         featuredirfromifc_label = QtWidgets.QLabel(ffifc_str, self)
-        self._featuredirfromifc_cb = QtWidgets.QCheckBox(self)
-        self._featuredirfromifc_cb.stateChanged.connect(self.mybeside)
+        self.featuredirfromifc_cb = QtWidgets.QCheckBox(self)
+        self.featuredirfromifc_cb.stateChanged.connect(
+            self.featuredirfromifc_clicked
+        )
 
         # path browser and line edit
         _ffdir_str = (
             "Feature files directory. "
             "Feature files in directory features."
         )
-        featurefilesdir_label = QtWidgets.QLabel(_ffdir_str, self)
-        self._featurefilesdir_text = QtWidgets.QLineEdit()
+        _featurefilesdir_label = QtWidgets.QLabel(_ffdir_str, self)
+        self.featurefilesdir_text = QtWidgets.QLineEdit()
         self.set_featurefilesdir(self.initial_featurespath)
-        featurefilesdir_browse_btn = QtWidgets.QToolButton()
-        featurefilesdir_browse_btn.setText("...")
-        featurefilesdir_browse_btn.clicked.connect(
-            self._select_featurefilesdir
+        self.feafilesdir_browse_btn = QtWidgets.QToolButton()
+        self.feafilesdir_browse_btn.setText("...")
+        self.feafilesdir_browse_btn.clicked.connect(
+            self.select_featurefilesdir
         )
 
         # buttons
-        self._run_button = QtWidgets.QPushButton(
+        self.run_button = QtWidgets.QPushButton(
             QtGui.QIcon.fromTheme("document-new"), "Run"
         )
-        self._close_button = QtWidgets.QPushButton(
+        self.close_button = QtWidgets.QPushButton(
             QtGui.QIcon.fromTheme("window-close"), "Close"
         )
-        self._run_button.clicked.connect(self.run_bimtester)
-        self._close_button.clicked.connect(self.close_widget)
+        self.run_button.clicked.connect(self.run_bimtester)
+        self.close_button.clicked.connect(self.close_widget)
         _buttons = QtWidgets.QHBoxLayout()
-        _buttons.addWidget(self._run_button)
-        _buttons.addWidget(self._close_button)
+        _buttons.addWidget(self.run_button)
+        _buttons.addWidget(self.close_button)
 
         # Layout:
         layout = QtWidgets.QGridLayout()
         layout.addWidget(theicon, 1, 0, alignment=QtCore.Qt.AlignRight)
-        layout.addWidget(ifcfile_label, 2, 0)
-        layout.addWidget(self._ifcfile_text, 3, 0)
-        layout.addWidget(ifcfile_browse_btn, 3, 1)
-        layout.addWidget(featurefilesdir_label, 4, 0)
-        layout.addWidget(self._featurefilesdir_text, 5, 0)
-        layout.addWidget(featurefilesdir_browse_btn, 5, 1)
+        layout.addWidget(_ifcfile_label, 2, 0)
+        layout.addWidget(self.ifcfile_text, 3, 0)
+        layout.addWidget(_ifcfile_browse_btn, 3, 1)
+        layout.addWidget(_featurefilesdir_label, 4, 0)
+        layout.addWidget(self.featurefilesdir_text, 5, 0)
+        layout.addWidget(self.feafilesdir_browse_btn, 5, 1)
         layout.addWidget(featuredirfromifc_label, 6, 0)
-        layout.addWidget(self._featuredirfromifc_cb, 6, 1)
+        layout.addWidget(self.featuredirfromifc_cb, 6, 1)
         layout.addLayout(_buttons, 7, 0)
         # row stretches by 10 compared to the others, std is 0
         # first parameter is the row number
@@ -143,7 +144,7 @@ class GuiWidgetBimTester(QtWidgets.QWidget):
         self.setLayout(layout)
 
     # **********************************************************
-    def _select_ifcfile(self):
+    def select_ifcfile(self):
         # print(self.get_ifcfile())
         # print(os.path.isfile(self.get_ifcfile()))
         ifcfile = QtWidgets.QFileDialog.getOpenFileName(
@@ -153,21 +154,26 @@ class GuiWidgetBimTester(QtWidgets.QWidget):
         self.set_ifcfile(ifcfile)
 
     def set_ifcfile(self, a_file):
-        self._ifcfile_text.setText(a_file)
+        self.ifcfile_text.setText(a_file)
 
     def get_ifcfile(self):
-        return self._ifcfile_text.text()
+        return self.ifcfile_text.text()
 
-    def mybeside(self):
-        print("TODO...TODO")
-        # TODO
-        # rename method
-        # deactivate feature path browser button
-        # delete lineedit text
-        # deactivate lineedit text
+    def featuredirfromifc_clicked(self):
+        if self.featuredirfromifc_cb.isChecked() is True:
+            self.set_featurefilesdir("")
+            # TODO
+            self.featurefilesdir_text.setEnabled(False)
+            self.feafilesdir_browse_btn.setEnabled(False)
+            # deactivate feature path browser button
+            # deactivate lineedit text
+        else:
+            self.set_featurefilesdir(self.initial_featurespath)
+            self.featurefilesdir_text.setEnabled(True)
+            self.feafilesdir_browse_btn.setEnabled(True)
 
-    def _select_featurefilesdir(self):
-        thedir = self._featurefilesdir_text.text()
+    def select_featurefilesdir(self):
+        thedir = self.featurefilesdir_text.text()
         # print(thedir)
         # print(os.path.isdir(thedir))
         # hidden directories are only shown if the option is set
@@ -180,10 +186,10 @@ class GuiWidgetBimTester(QtWidgets.QWidget):
         self.set_featurefilesdir(features_path)
 
     def set_featurefilesdir(self, a_directory):
-        self._featurefilesdir_text.setText(a_directory)
+        self.featurefilesdir_text.setText(a_directory)
 
     def get_featurefilesdir(self):
-        return self._featurefilesdir_text.text()
+        return self.featurefilesdir_text.text()
 
     # **********************************************************
     def run_bimtester(self):
@@ -193,7 +199,7 @@ class GuiWidgetBimTester(QtWidgets.QWidget):
         # get input values
         splitifcpath = os.path.split(self.get_ifcfile())
         the_ifcfile_path, the_ifcfile_name = splitifcpath[0], splitifcpath[1]
-        if self._featuredirfromifc_cb.isChecked() is True:
+        if self.featuredirfromifc_cb.isChecked() is True:
             the_features_path = the_ifcfile_path
             print(
                 "Make sure the feature files are beside "
