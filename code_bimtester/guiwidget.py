@@ -28,7 +28,7 @@ from PySide2 import QtCore
 from PySide2 import QtGui
 from PySide2 import QtWidgets
 
-from .fcbimtester import run_all
+from .run import run_all
 
 
 class GuiWidgetBimTester(QtWidgets.QWidget):

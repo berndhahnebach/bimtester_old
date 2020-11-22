@@ -1,4 +1,5 @@
 # ***************************************************************************
+# *   Copyright (c) 2020 Dion Moult <>                                      *
 # *   Copyright (c) 2020 Bernd Hahnebach <bernd@bimstatik.org>              *
 # *                                                                         *
 # *   This program is free software; you can redistribute it and/or modify  *
@@ -19,47 +20,73 @@
 # *                                                                         *
 # ***************************************************************************
 
-# TODO somehow merge into bimtester and make a PR to official bimtester module
+# Unix:
+# $ pyinstaller --onefile --clean --icon=icon.ico --add-data "features:features" bimtester.py`
+# Windows:
+# $ pyinstaller --onefile --clean --icon=icon.ico --add-data "features;features" bimtester.py`
 
-import fileinput
+from behave.__main__ import main as behave_main
+import behave.formatter.pretty  # Needed for pyinstaller to package it
+import ifcopenshell
 import os
+import sys
 import shutil
+import webbrowser
+import fileinput
 import tempfile
+from pathlib import Path
 
-# import FreeCAD
 
 # get bimtester source code module path
 bimtester_path = os.path.dirname(os.path.realpath(__file__))
 # print(bimtester_path)
+try:
+    # PyInstaller creates a temp folder and stores path in _MEIPASS
+    base_path = sys._MEIPASS
+except Exception:
+    base_path = os.path.dirname(os.path.realpath(__file__))
 
 
-# TODO: if the ifc file name or path contains special character
-# like German Umlaute behave gives an error
+def get_resource_path(relative_path):
+    return os.path.join(base_path, relative_path)
 
 
-"""
-from code_bimtester import fcbimtester
-myfeatures_path = "/home/hugo/.FreeCAD/Mod/bimtester/features_bimtester/"
-myifcfile_path = "/home/hugo/Documents/zeug_sort/z_some_ifc/"
-ifcfilename = "3_15025_KiGa_ING_N_TRW.ifc"
-fcbimtester.run_all(myfeatures_path, myifcfile_path, ifcfilename)
+def run_tests(args):
+    if not get_features(args):
+        print("No features could be found to check.")
+        return False
+    behave_args = [get_resource_path("features")]
+    if args["advanced_arguments"]:
+        behave_args.extend(args["advanced_arguments"].split())
+    elif not args["console"]:
+        behave_args.extend(["--format", "json.pretty", "--outfile", "report/report.json"])
+    behave_main(behave_args)
+    print("# All tests are finished.")
+    return True
 
-or
 
-runpath = fcbimtester.run_intmp_tests({"features": myfeatures_path, "ifcpath": myifcfile_path, "ifcfilename": ifcfilename})
-fcbimtester.generate_report(runpath)
+def get_features(args):
+    # current_path = os.path.abspath(".")
+    features_dir = get_resource_path("features")
+    for f in os.listdir(features_dir):
+        if f.endswith(".feature"):
+            os.remove(os.path.join(features_dir, f))
+    if args["feature"]:
+        shutil.copyfile(args["feature"], os.path.join(get_resource_path("features"), os.path.basename(args["feature"])))
+        return True
+    if os.path.exists("features"):
+        shutil.copytree("features", get_resource_path("features"))
+        return True
+    has_features = False
+    for f in os.listdir("."):
+        if not f.endswith(".feature"):
+            continue
+        if args["feature"] and args["feature"] != f:
+            continue
+        has_features = True
+        shutil.copyfile(f, os.path.join(get_resource_path("features"), os.path.basename(f)))
+    return has_features
 
-
-from code_bimtester import fcbimtester
-myfeatures_path = "/home/hugo/Documents/zeug_sort/ifcos_bimtester/myrun/"
-fcbimtester.run_all(myfeatures_path, myfeatures_path)
-
-or
-
-runpath = fcbimtester.run_intmp_tests({"features": myfeatures_path, "ifcpath": myfeatures_path})
-fcbimtester.generate_report(runpath)
-
-"""
 
 """
 # clean logs to be able to run tests
@@ -73,6 +100,25 @@ from behave.runner_util import reset_runtime
 reset_runtime()
 
 """
+
+
+"""
+from code_bimtester import fcbimtester
+myfeatures_path = "/home/hugo/.FreeCAD/Mod/bimtester/features_bimtester/"
+myifcfile_path = "/home/hugo/Documents/zeug_sort/z_some_ifc/"
+ifcfilename = "3_15025_KiGa_ING_N_TRW.ifc"
+fcbimtester.run_all(myfeatures_path, myifcfile_path, ifcfilename)
+
+
+from code_bimtester import fcbimtester
+myfeatures_path = "/home/hugo/Documents/zeug_sort/ifcos_bimtester/myrun/"
+fcbimtester.run_all(myfeatures_path, myfeatures_path)
+
+"""
+
+
+# TODO: if the ifc file name or path contains special character
+# like German Umlaute behave gives an error
 
 
 def run_intmp_tests(args={}):
@@ -219,14 +265,6 @@ def run_intmp_tests(args={}):
     return run_path
 
 
-def generate_report(adir=None):
-    from .bimtester import generate_report
-    if adir is None:
-        generate_report()
-    else:
-        generate_report(adir)
-
-
 def run_all(the_features_path, the_ifcfile_path, the_ifcfile_name=None):
 
     # feature files
@@ -249,11 +287,11 @@ def run_all(the_features_path, the_ifcfile_path, the_ifcfile_name=None):
         })
 
     # create html report
+    from .reports import generate_report
     generate_report(runpath)
     # print(runpath)
 
     # open the webbrowser
-    import webbrowser
     for ff in feature_files:
         webbrowser.open(os.path.join(
             runpath,
@@ -262,3 +300,47 @@ def run_all(the_features_path, the_ifcfile_path, the_ifcfile_name=None):
         ))
 
     return True
+
+
+class TestPurger:
+    def __init__(self):
+        self.file = None
+
+    def purge(self):
+        filenames = []
+        if os.path.exists("features"):
+            for filename in Path("features/").glob("*.feature"):
+                filenames.append(filename)
+        for f in os.listdir("."):
+            if f.endswith(".feature"):
+                filenames.append(f)
+
+        for filename in filenames:
+            with open(filename, "r") as feature_file:
+                old_file = feature_file.readlines()
+            with open(filename, "w") as new_file:
+                for line in old_file:
+                    is_purged = False
+                    if 'The IFC file "' in line and '" must be provided' in line:
+                        filename = line.split('"')[1]
+                        print("Loading file {} ...".format(filename))
+                        self.file = ifcopenshell.open(filename)
+                    if line.strip()[0:2] == "* ":
+                        words = line.strip().split()
+                        for word in words:
+                            if self.is_a_global_id(word):
+                                if not self.does_global_id_exist(word):
+                                    print("Test for {} purged ...".format(word))
+                                    is_purged = True
+                    if not is_purged:
+                        new_file.write(line)
+
+    def is_a_global_id(self, word):
+        return word[0] in ["0", "1", "2", "3"] and len(word) == 22
+
+    def does_global_id_exist(self, global_id):
+        try:
+            self.file.by_guid(global_id)
+            return True
+        except Exception:
+            return False
