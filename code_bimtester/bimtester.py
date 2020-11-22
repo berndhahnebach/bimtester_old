@@ -29,7 +29,10 @@
 # Windows:
 # $ pyinstaller --onefile --clean --icon=icon.ico --add-data "features;features" bimtester.py`
 
+
 import argparse
+
+import clean
 import reports
 import run
 
@@ -46,7 +49,7 @@ if __name__ == "__main__":
     args = vars(parser.parse_args())
 
     if args["purge"]:
-        run.TestPurger().purge()
+        clean.TestPurger().purge()
     elif args["report"]:
         reports.generate_report()
     else:
