@@ -34,3 +34,34 @@
 ### Remaining issues
 + https://github.com/behave/behave/issues/264
 + https://github.com/behave/behave/issues/549
+
+
+### bimtester start script
++ this module has to be here and not inside the code_bimtester package
++ https://stackoverflow.com/questions/16981921/relative-imports-in-python-3
+
+##### outside FreeCAD in a shell
++ behave pystache etc needs to be installed on windows (anaconda) if outside FreeCAD
+```
+python3 /home/hugo/.FreeCAD/Mod/bimtester/guistartbimtester.py
+python C:\Users\BHA\AppData\Roaming\FreeCAD\Mod\bimtester\guistartbimtester.py
+```
+
+##### outside FreeCAD inside Python
+```
+import sys
+sys.path.append("/home/hugo/.FreeCAD/Mod/bimtester/")
+from  guistartbimtester import show_widget
+show_widget()
+```
+
+##### inside FreeCAD
+```
+import sys
+from PySide2 import QtWidgets
+from code_bimtester.guiwidget import GuiWidgetBimTester
+app = QtWidgets.QApplication(sys.argv)
+form = GuiWidgetBimTester()
+form.show()
+# sys.exit(app.exec_())
+```
