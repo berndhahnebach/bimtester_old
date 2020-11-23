@@ -33,51 +33,60 @@ import steps.helpersmartviewstrings as hss
 
 
 this_path = os.path.dirname(os.path.realpath(__file__))
-log_path = os.path.join(this_path, "..")
-sm_file = os.path.join(log_path, "zoombimtestersmartview.bcsv")
+out_path = os.path.join(this_path, "..")
+# sm_file = os.path.join(out_path, "zoombimtestersmartview.bcsv")
 
 def before_all(context):
+
     userdata = context.config.userdata
+    context.ifcbasename = userdata["ifcbasename"]
+
+    # do not bread after a failed scenario
     continue_after_failed = True
     Scenario.continue_after_failed_step = continue_after_failed
 
+    # keep out path
+    context.outpath = out_path
+
+    # set up my log file
+    context.thelogfile = os.path.join(out_path, "mybimtesterlog.log")
+
+    # set up smart view file
+    # since all bimtester tmp is removed first the sm_file
+    # does not need to be explicit removed first
+    sm_file = os.path.join(out_path, context.ifcbasename + ".bcsv")
+    context.thesmfile = sm_file
+    smf = open(sm_file, "w")
+    smf.write("{}\n".format(hss.fileheader))
+    smf.write("<SMARTVIEWSETS>\n")
+    smf.write("    <SMARTVIEWSET>\n")
+    smf.write("        <TITLE>BIMTester {}</TITLE>\n".format(context.ifcbasename))
+    smf.write("        <DESCRIPTION></DESCRIPTION>\n")
+    smf.write("        <GUID>a2ddfaf7-97f2-4519-aabd-f2d94f6b4d6b</GUID>\n")
+    smf.write("        <MODIFICATIONDATE>2020-10-30T13:23:30</MODIFICATIONDATE>\n")
+    smf.write("        <SMARTVIEWS>\n")
+    smf.write("        </SMARTVIEWS>\n")
+    smf.write("    </SMARTVIEWSET>\n")
+    smf.write("</SMARTVIEWSETS>\n")
+    smf.close()
+
     """
-    # test befora_all ...
-    mytestlogfile = open(os.path.join(log_path, "zztest.txt"), "w")
+    # test before_all ...
+    mytestlogfile = open(os.path.join(out_path, "zztest.txt"), "w")
     mytestlogfile.write("myenvironmenttest\n")
     mytestlogfile.write(this_path)
     mytestlogfile.close()
     """
 
-    # set up my log file
-    context.thelogfile = os.path.join(log_path, "mybimtesterlog.log")
-
-    # set up smart view file
-    context.thesmfile = sm_file
-    """
-    # since all bimtester tmp is removed first the sm_file
-    # does not need to be explicit removed first
-    smf = open(sm_file, "w")
-    smf.write("{}\n".format(hss.smartviews_string_before))
-    smf.close()    
-    # TODO
-    # create file, write smartviews before
-    # in each scenario write the smartview foreach scenario
-    # after all here in new method write smartviews after and
-    # only one smartview file which consists of lots of smartviews
-    """
-
-
-def after_all(context):
-
-    smf = open(sm_file, "a")
-    smf.write("{}\n".format(hss.smartviews_string_after))
-    smf.close()    
-
 
 """
 # https://stackoverflow.com/a/31545036
 # https://behave.readthedocs.io/en/latest/tutorial.html#environmental-controls
+
+
+# the scope of context attriutes set in step is the scenario :-(
+# https://behave.readthedocs.io/en/latest/context_attributes.html
+
 
 def before_step(context, step):
     print(step.name)

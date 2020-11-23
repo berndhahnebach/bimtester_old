@@ -69,6 +69,7 @@ each_smartview_string_before = """                <CREATOR>bernd@bimstatik.ch</C
                         </ACTION>
                     </RULE>"""
 
+
 each_smartview_string_after = """                </RULES>
                 <INFORMATIONTAKEOFF>
                     <PROPERTYSETNAME>None</PROPERTYSETNAME>
@@ -101,4 +102,3 @@ rule_string_after = """</VALUE>
                             <B>10</B>
                         </ACTION>
                     </RULE>"""
-

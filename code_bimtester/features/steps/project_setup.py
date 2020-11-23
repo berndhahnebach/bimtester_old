@@ -2,17 +2,12 @@ import os
 
 from behave import step
 
-import helpertools
 from utils import IfcFile
 from utils import IfcFile, assert_attribute
 
 
 @step('The IFC file "{file}" must be provided')
 def step_impl(context, file):
-    if not os.path.isfile(context.thesmfile):
-        ifcbasename = os.path.splitext(os.path.basename(file))[0]
-        # print(ifcbasename)
-        helpertools.create_zoom_smartview(context.thesmfile, ifcbasename)
     try:
         IfcFile.load(file)
     except:
