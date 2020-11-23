@@ -88,7 +88,7 @@ def get_features(args):
 # on each new run, directory will be deleted before each new run
 # https://github.com/behave/behave/issues/871
 # run bimtester
-# copy manually this code, run code again, does not work
+# copy manually this code, run bimtester again, does not work on two directories
 from behave.runner_util import reset_runtime
 reset_runtime()
 
@@ -96,16 +96,16 @@ reset_runtime()
 
 
 """
-from code_bimtester import fcbimtester
-myfeatures_path = "/home/hugo/.FreeCAD/Mod/bimtester/features_bimtester/"
+from code_bimtester import run
+myfeatures_path = "/home/hugo/.FreeCAD/Mod/bimtester/features_bimtester/fea_min/"
 myifcfile_path = "/home/hugo/Documents/zeug_sort/z_some_ifc/"
-ifcfilename = "3_15025_KiGa_ING_N_TRW.ifc"
-fcbimtester.run_all(myfeatures_path, myifcfile_path, ifcfilename)
+ifcfilename = "example_model.ifc"
+run.run_all(myfeatures_path, myifcfile_path, ifcfilename)
 
 
-from code_bimtester import fcbimtester
+from code_bimtester import run
 myfeatures_path = "/home/hugo/Documents/zeug_sort/ifcos_bimtester/myrun/"
-fcbimtester.run_all(myfeatures_path, myfeatures_path)
+run.run_all(myfeatures_path, myfeatures_path)
 
 """
 

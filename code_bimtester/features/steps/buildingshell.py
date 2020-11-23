@@ -5,7 +5,7 @@ import helpertools
 
 
 # behave needs to be started with a option to redirect prints
-# see fcbimtester module
+# see bimtesters run module
 # keep in mind on a fail the output is catched and not printed
 # use assert False and output inside this assert
 

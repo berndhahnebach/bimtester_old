@@ -96,7 +96,7 @@ def generate_report(adir="."):
                         else step["result"]["error_message"],
                     }
                 )
-            total_passes = len([s for s in steps if s["is_success"] == True])
+            total_passes = len([s for s in steps if s["is_success"] is True])
             total_steps = len(steps)
             pass_rate = round((total_passes / total_steps) * 100)
             data["scenarios"].append(

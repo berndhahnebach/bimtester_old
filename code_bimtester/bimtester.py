@@ -2,6 +2,7 @@
 
 # ***************************************************************************
 # *   Copyright (c) 2020 Dion Moult <>                                      *
+# *   Copyright (c) 2020 Bernd Hahnebach <bernd@bimstatik.org>              *
 # *                                                                         *
 # *   This program is free software; you can redistribute it and/or modify  *
 # *   it under the terms of the GNU Lesser General Public License (LGPL)    *
@@ -23,6 +24,13 @@
 
 # Bernd: IMHO, this should go one lever up,
 # or all other code should go one level down
+# https://stackoverflow.com/questions/16981921/relative-imports-in-python-3
+
+
+# ATM bimtester code is copied here for for the sake of convenience
+# TODO bimtester should be installed in conjunction with ifcopenshell
+# to /urs/local by make install
+
 
 # Unix:
 # $ pyinstaller --onefile --clean --icon=icon.ico --add-data "features:features" bimtester.py`

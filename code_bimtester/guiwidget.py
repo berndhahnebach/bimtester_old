@@ -34,11 +34,11 @@ from .run import run_all
 class GuiWidgetBimTester(QtWidgets.QWidget):
 
     # get some initial values
-    initial_ifcfile = "/home/hugo/Documents/zeug_sort/z_some_ifc/3_15025_KiGa_ING_N_TRW.ifc"
+    initial_ifcfile = "/home/hugo/Documents/zeug_sort/z_some_ifc/example_model.ifc"
     if not os.path.isfile(initial_ifcfile):
         initial_ifcfile = os.path.join(os.path.expanduser("~"), "Desktop")
     this_path = os.path.join(os.path.dirname(__file__))
-    initial_featurespath = os.path.join(this_path, "..", "features_bimtester")
+    initial_featurespath = os.path.join(this_path, "..", "features_bimtester", "fea_min")
 
     def __init__(self):
         super(GuiWidgetBimTester, self).__init__()
@@ -212,7 +212,6 @@ class GuiWidgetBimTester(QtWidgets.QWidget):
         print(the_ifcfile_name)
 
         # run bimtester
-        # from code_bimtester.fcbimtester import run_all
         status = run_all(
             the_features_path,
             the_ifcfile_path,
