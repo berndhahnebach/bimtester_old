@@ -41,17 +41,22 @@ def before_all(context):
     continue_after_failed = True
     Scenario.continue_after_failed_step = continue_after_failed
 
+    """
     # test befora_all ...
-    mytestlogfile = open(os.path.join(log_path, "zztest"), "w")
+    mytestlogfile = open(os.path.join(log_path, "zztest.txt"), "w")
     mytestlogfile.write("myenvironmenttest\n")
     mytestlogfile.write(this_path)
     mytestlogfile.close()
+    """
 
     # set up my log file
     context.thelogfile = os.path.join(log_path, "mybimtesterlog.log")
 
     # set up smart view file
     context.thesmfile = sm_file
+    """
+    # since all bimtester tmp is removed first the sm_file
+    # does not need to be explicit removed first
     smf = open(sm_file, "w")
     smf.write("{}\n".format(hss.smartviews_string_before))
     smf.close()    
@@ -60,6 +65,7 @@ def before_all(context):
     # in each scenario write the smartview foreach scenario
     # after all here in new method write smartviews after and
     # only one smartview file which consists of lots of smartviews
+    """
 
 
 def after_all(context):
