@@ -1,7 +1,6 @@
 import json
 from behave import step
 
-import helpertools
 from utils import IfcFile
 
 
@@ -27,24 +26,14 @@ def step_impl(context, ifc_class, aproperty, pset):
         logfile.write("{} --> {}\n".format(elem.id(), psets))
     logfile.write("{}\n".format(json.dumps(false_elements_elem, indent=2)))
     logfile.close()
+
+    context.falseguids = false_elements_guid
     if len(false_elements_elem) > 0:
-        helpertools.append_zoom_smartview(
-            context.thesmfile,
-            context.scenario.name,
-            false_elements_guid
-        )
         assert False, (
             "Some elemets missing the pset or property: {}"
             .format(json.dumps(false_elements_elem, indent=2))
         )
         # see UUID is a IfcSpace test, there AssertionFals with smart output from utils module
-
-    # Wenn ein test in einem scenario fehl schlaegt und der gleiche test nochmal kommt
-    # dann kommt gelb im report "This requirement has not yet been specified."
-    # normal sollten diese aber auch noch ablaufen.
-    # schoen auch zu sehen an The element {uuid} is an {ifc_class}
-    # der erste schlaegt fehl, der zweite "This requirement has not yet been specified."
-    # https://community.osarch.org/discussion/comment/3328/#Comment_3328
 
 
 # "all building elements have an {aproperty} property in the {pset} pset")
@@ -65,12 +54,9 @@ def step_impl(context, attribute, myattributesum):
         logfile.write("{} --> {}\n".format(elem.id(), psets))
     logfile.write("{}\n".format(sorted(false_elements_elem)))
     logfile.close()
+
+    context.falseguids = false_elements_guid
     if len(false_elements_elem) > 0:
-        helpertools.append_zoom_smartview(
-            context.thesmfile,
-            context.scenario.name,
-            false_elements_guid
-        )
         assert False, (
             "Some elemets missing the pset or property: {}"
             .format(json.dumps(false_elements_elem, indent=2))
@@ -89,9 +75,9 @@ def step_impl(context):
 
     from ifcopenshell import geom as ifcgeom
     settings = ifcgeom.settings()
-    settings.set(settings.USE_BREP_DATA,True)
-    settings.set(settings.SEW_SHELLS,True)
-    settings.set(settings.USE_WORLD_COORDS,True)
+    settings.set(settings.USE_BREP_DATA, True)
+    settings.set(settings.SEW_SHELLS, True)
+    settings.set(settings.USE_WORLD_COORDS, True)
 
     false_elements_error = {}
     false_elements_guid = []
@@ -102,7 +88,7 @@ def step_impl(context):
             # or ifcos does not return a valid representation
             cr = ifcgeom.create_shape(settings, elem)
             brep = cr.geometry.brep_data
-        except:
+        except Exception:
             brep = None
         if brep:
             shape = Part.Shape()
@@ -117,12 +103,8 @@ def step_impl(context):
             false_elements_error[elem.id()] = error
             false_elements_guid.append(elem.GlobalId)
 
+    context.falseguids = false_elements_guid
     if len(false_elements_error) > 0:
-        helpertools.append_zoom_smartview(
-            context.thesmfile,
-            context.scenario.name,
-            false_elements_guid
-        )
         assert False, (
             "Geometry elements errors: {}"
             .format(json.dumps(false_elements_error, indent=2))

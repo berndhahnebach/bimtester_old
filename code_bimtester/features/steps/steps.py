@@ -1,7 +1,6 @@
 import json
 from behave import step
 
-import helpertools
 from utils import IfcFile
 
 
@@ -13,12 +12,9 @@ def step_impl(context, ifc_class, reason):
     for elem in elements:
         false_elements_elem.append(str(elem))
         false_elements_guid.append(elem.GlobalId)
+
+    context.falseguids = false_elements_guid
     if len(elements) > 0:
-        helpertools.append_zoom_smartview(
-            context.thesmfile,
-            context.scenario.name,
-            false_elements_guid
-        )
         assert False, (
             "{} elements: {}"
             .format(ifc_class, json.dumps(false_elements_elem, indent=2))
@@ -73,12 +69,9 @@ def step_impl(context, ifc_class, representation_class):
             false_elements_guid.append(elem.GlobalId)
     logfile.write("{}\n".format(json.dumps(false_elements_elem, indent=2)))
     logfile.close()
+
+    context.falseguids = false_elements_guid
     if len(false_elements_elem) > 0:
-        helpertools.append_zoom_smartview(
-            context.thesmfile,
-            context.scenario.name,
-            false_elements_guid
-        )
         assert False, (
             "Some elements are not a IfcFacetedBrep representation: {}"
             .format(json.dumps(false_elements_elem, indent=2))
