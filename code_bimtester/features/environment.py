@@ -24,12 +24,10 @@ import os
 
 from behave.model import Scenario
 
-import steps.helpersmartviewstrings as hss
-
 
 # this needs to be at the same place
 # as the step files and the feature files
-# thus if run in separate dir copy this file too
+# thus if run behave in separate dir copy this file too
 
 
 this_path = os.path.dirname(os.path.realpath(__file__))
@@ -57,7 +55,12 @@ def before_all(context):
     sm_file = os.path.join(out_path, context.ifcbasename + ".bcsv")
     context.thesmfile = sm_file
     smf = open(sm_file, "w")
-    smf.write("{}\n".format(hss.fileheader))
+    smf.write('<?xml version="1.0"?>\n')
+    smf.write("<bimcollabsmartviewfile>\n")
+    smf.write("    <version>5</version>\n")
+    smf.write("    <applicationversion>Win - Version: 3.4 (build 3.4.13.559)</applicationversion>\n")
+    smf.write("</bimcollabsmartviewfile>\n")
+    smf.write("\n")
     smf.write("<SMARTVIEWSETS>\n")
     smf.write("    <SMARTVIEWSET>\n")
     smf.write("        <TITLE>BIMTester {}</TITLE>\n".format(context.ifcbasename))
@@ -86,10 +89,6 @@ def before_all(context):
 
 # the scope of context attriutes set in step is the scenario :-(
 # https://behave.readthedocs.io/en/latest/context_attributes.html
-
-
-def before_step(context, step):
-    print(step.name)
 
 
 def after_step(context, step):

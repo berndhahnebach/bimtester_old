@@ -1,25 +1,3 @@
-fileheader = """<?xml version="1.0"?>
-<bimcollabsmartviewfile>
-    <version>5</version>
-    <applicationversion>Win - Version: 3.4 (build 3.4.13.559)</applicationversion>
-</bimcollabsmartviewfile>
-"""
-
-
-smartviews_string_before = """<SMARTVIEWSETS>
-    <SMARTVIEWSET>
-        <TITLE>bimtester</TITLE>
-        <DESCRIPTION></DESCRIPTION>
-        <GUID>a2ddfaf7-97f2-4519-aabd-f2d94f6b4d6b</GUID>
-        <MODIFICATIONDATE>2020-10-30T13:23:30</MODIFICATIONDATE>
-        <SMARTVIEWS>"""
-
-
-smartviews_string_after = """        </SMARTVIEWS>
-    </SMARTVIEWSET>
-</SMARTVIEWSETS>"""
-
-
 each_smartview_string_title = """            <SMARTVIEW>
                 <TITLE>Filter GUID</TITLE>
                 <DESCRIPTION></DESCRIPTION>"""
