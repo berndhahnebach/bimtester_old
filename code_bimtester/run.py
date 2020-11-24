@@ -52,7 +52,12 @@ def run_tests(args):
     if args["advanced_arguments"]:
         behave_args.extend(args["advanced_arguments"].split())
     elif not args["console"]:
-        behave_args.extend(["--format", "json.pretty", "--outfile", "report/report.json"])
+        behave_args.extend([
+            "--format",
+            "json.pretty",
+            "--outfile",
+            "report/report.json"
+        ])
     behave_main(behave_args)
     print("# All tests are finished.")
     return True
@@ -65,7 +70,13 @@ def get_features(args):
         if f.endswith(".feature"):
             os.remove(os.path.join(features_dir, f))
     if args["feature"]:
-        shutil.copyfile(args["feature"], os.path.join(get_resource_path("features"), os.path.basename(args["feature"])))
+        shutil.copyfile(
+            args["feature"],
+            os.path.join(
+                get_resource_path("features"),
+                os.path.basename(args["feature"])
+            )
+        )
         return True
     if os.path.exists("features"):
         shutil.copytree("features", get_resource_path("features"))
@@ -77,7 +88,10 @@ def get_features(args):
         if args["feature"] and args["feature"] != f:
             continue
         has_features = True
-        shutil.copyfile(f, os.path.join(get_resource_path("features"), os.path.basename(f)))
+        shutil.copyfile(
+            f,
+            os.path.join(get_resource_path("features"), os.path.basename(f))
+        )
     return has_features
 
 
@@ -88,7 +102,8 @@ def get_features(args):
 # on each new run, directory will be deleted before each new run
 # https://github.com/behave/behave/issues/871
 # run bimtester
-# copy manually this code, run bimtester again, does not work on two directories
+# copy manually this code, run bimtester again,
+# does not work on two directories
 from behave.runner_util import reset_runtime
 reset_runtime()
 
