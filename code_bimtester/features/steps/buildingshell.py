@@ -1,7 +1,8 @@
+import json
 from behave import step
-from utils import IfcFile
 
 import helpertools
+from utils import IfcFile
 
 
 # behave needs to be started with a option to redirect prints
@@ -15,21 +16,26 @@ def step_impl(context, ifc_class, aproperty, pset):
     logfile = open(context.thelogfile, "a")
     logfile.write("PropTest: {}, {}, {}\n".format(ifc_class, aproperty, pset))
     elements = IfcFile.get().by_type(ifc_class)
-    false_elements_id = []
+    false_elements_elem = []
     false_elements_guid = []
     from ifcopenshell.util.element import get_psets
-    for element in elements:
-        psets = get_psets(element)
+    for elem in elements:
+        psets = get_psets(elem)
         if not (pset in psets and aproperty in psets[pset]):
-            false_elements_id.append(element.id())
-            false_elements_guid.append(element.GlobalId)
-        logfile.write("{} --> {}\n".format(element.id(), psets))
-    logfile.write("{}\n".format(sorted(false_elements_id)))
+            false_elements_elem.append(str(elem))
+            false_elements_guid.append(elem.GlobalId)
+        logfile.write("{} --> {}\n".format(elem.id(), psets))
+    logfile.write("{}\n".format(json.dumps(false_elements_elem, indent=2)))
     logfile.close()
-    if len(false_elements_id) > 0:
+    if len(false_elements_elem) > 0:
+        helpertools.append_zoom_smartview(
+            context.thesmfile,
+            context.scenario.name,
+            false_elements_guid
+        )
         assert False, (
-            "Some elemets missing the pset or property: {}, {}"
-            .format(false_elements_id, false_elements_guid)
+            "Some elemets missing the pset or property: {}"
+            .format(json.dumps(false_elements_elem, indent=2))
         )
         # see UUID is a IfcSpace test, there AssertionFals with smart output from utils module
 
@@ -48,30 +54,30 @@ def step_impl(context, attribute, myattributesum):
     logfile = open(context.thelogfile, "a")
     logfile.write("PropTest: {}, {}\n".format(attribute, myattributesum))
     elements = IfcFile.get().by_type("IfcBuildingElement")
-    false_elements_id = []
+    false_elements_elem = []
     false_elements_guid = []
     from ifcopenshell.util.element import get_psets
     for elem in elements:
         psets = get_psets(elem)
         if not (myattributesum in psets and attribute in psets[myattributesum]):
-            false_elements_id.append(elem.id())
+            false_elements_elem.append(str(elem))
             false_elements_guid.append(elem.GlobalId)
         logfile.write("{} --> {}\n".format(elem.id(), psets))
-    logfile.write("{}\n".format(sorted(false_elements_id)))
+    logfile.write("{}\n".format(sorted(false_elements_elem)))
     logfile.close()
-    if len(false_elements_id) > 0:
+    if len(false_elements_elem) > 0:
         helpertools.append_zoom_smartview(
             context.thesmfile,
             context.scenario.name,
             false_elements_guid
         )
         assert False, (
-            "Some elemets missing the pset or property: {}, {}"
-            .format(false_elements_id, false_elements_guid)
+            "Some elemets missing the pset or property: {}"
+            .format(json.dumps(false_elements_elem, indent=2))
         )
 
 
-@step("All elements must have a shape without errors")
+@step("all elements must have a shape without errors")
 def step_impl(context):
     elements = IfcFile.get().by_type("IfcBuildingElement")
 
@@ -91,12 +97,20 @@ def step_impl(context):
     false_elements_guid = []
     for elem in elements:
         # TODO: some print and update gui and or flush, this could take time
-        cr = ifcgeom.create_shape(settings, elem)
-        brep = cr.geometry.brep_data
-        shape = Part.Shape()
-        shape.importBrepFromString(brep)
-        shape.scale(1000.0)  # IfcOpenShell always outputs in meters
-        error = geomchecks.checkSolidGeometry(shape)
+        try:
+            # TODO distinguish if there is not representation
+            # or ifcos does not return a valid representation
+            cr = ifcgeom.create_shape(settings, elem)
+            brep = cr.geometry.brep_data
+        except:
+            brep = None
+        if brep:
+            shape = Part.Shape()
+            shape.importBrepFromString(brep)
+            shape.scale(1000.0)  # IfcOpenShell always outputs in meters
+            error = geomchecks.checkSolidGeometry(shape)
+        else:
+            error = "  IfcOpenShell failed to process the geometric representation."
         if error != "":
             print(error)
             Part.show(shape)
@@ -111,5 +125,5 @@ def step_impl(context):
         )
         assert False, (
             "Geometry elements errors: {}"
-            .format(false_elements_error)
+            .format(json.dumps(false_elements_error, indent=2))
         )

@@ -1,12 +1,28 @@
+import json
 from behave import step
+
+import helpertools
 from utils import IfcFile
 
 
 @step("there are no {ifc_class} elements because {reason}")
 def step_impl(context, ifc_class, reason):
     elements = IfcFile.get().by_type(ifc_class)
+    false_elements_elem = []
+    false_elements_guid = []
+    for elem in elements:
+        false_elements_elem.append(str(elem))
+        false_elements_guid.append(elem.GlobalId)
     if len(elements) > 0:
-        assert False, "{} elementss: {}".format(ifc_class, elements)
+        helpertools.append_zoom_smartview(
+            context.thesmfile,
+            context.scenario.name,
+            false_elements_guid
+        )
+        assert False, (
+            "{} elements: {}"
+            .format(ifc_class, json.dumps(false_elements_elem, indent=2))
+        )
 
 
 @step('all {ifc_class} elements have a name matching the pattern "{pattern}"')
@@ -33,14 +49,15 @@ def step_impl(context, ifc_class, representation_class):
             return True
 
     elements = IfcFile.get().by_type(ifc_class)
-    false_elements = {}
-    for element in elements:
-        logfile.write("{}\n".format(element))
-        if not element.Representation:
+    false_elements_elem = []
+    false_elements_guid = []
+    for elem in elements:
+        logfile.write("{}\n".format(elem))
+        if not elem.Representation:
             logfile.write("    continue{}\n")
             continue
         has_representation = False
-        for representation in element.Representation.Representations:
+        for representation in elem.Representation.Representations:
             for item in representation.Items:
                 logfile.write("    {}\n".format(item))
                 if item.is_a("IfcMappedItem"):
@@ -52,11 +69,20 @@ def step_impl(context, ifc_class, representation_class):
                     if is_item_a_representation(item, representation_class):
                         has_representation = True
         if not has_representation:
-            false_elements[element.id()] = element.GlobalId
-    logfile.write("{}\n".format(sorted(false_elements)))
+            false_elements_elem.append(str(elem))
+            false_elements_guid.append(elem.GlobalId)
+    logfile.write("{}\n".format(json.dumps(false_elements_elem, indent=2)))
     logfile.close()
-    if len(false_elements) > 0:
-        assert False, "Some elements are not a IfcFacetedBrep representation: {}".format(false_elements)
+    if len(false_elements_elem) > 0:
+        helpertools.append_zoom_smartview(
+            context.thesmfile,
+            context.scenario.name,
+            false_elements_guid
+        )
+        assert False, (
+            "Some elements are not a IfcFacetedBrep representation: {}"
+            .format(json.dumps(false_elements_elem, indent=2))
+        )
 
 
 use_step_matcher("re")
