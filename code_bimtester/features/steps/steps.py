@@ -14,12 +14,10 @@ def step_impl(context, ifc_class, reason):
         context.falseelems.append(str(elem))
         context.falseguids.append(elem.GlobalId)
 
-    context.falseelems = context.falseelems
-    context.falseguids = context.falseguids
     if len(elements) > 0:
         assert False, (
             "{} elements:\n{}"
-            .format(context.falseguids)
+            .format(ifc_class, context.falseguids)
         )
 
 
@@ -69,7 +67,7 @@ def step_impl(context, ifc_class, representation_class):
         if not has_representation:
             context.falseelems.append(str(elem))
             context.falseguids.append(elem.GlobalId)
-            context.falseprops[elem.id()] = rep
+            context.falseprops[elem.id()] = str(rep)
 
     if len(context.falseelems) > 0:
         assert False, (

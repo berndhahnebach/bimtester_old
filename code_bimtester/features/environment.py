@@ -38,11 +38,12 @@ def before_all(context):
     # set up my log file
     context.thelogfile = os.path.join(
         out_path,
-        "mybimtesterlog.log"
+        context.ifcbasename + ".log"
     )
     logfile = open(context.thelogfile, "w")
     logfile.write("BIMTester log file\n")
-    logfile.write("------------------\n")
+    logfile.write("------------------\n\n")
+    logfile.write("ifc base file name: {}\n".format(context.ifcbasename))
     logfile.close()
 
     # set up smart view file
@@ -71,7 +72,7 @@ def after_step(context, step):
 
         # step attributes (also these set by user) scope is the scenario
         # https://behave.readthedocs.io/en/latest/context_attributes.html
-        print("Step {} failed".format(step.name))
+        print("Step '{}' failed".format(step.name))
 
         # log file
         logfile = open(context.thelogfile, "a")

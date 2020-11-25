@@ -3,11 +3,12 @@ from behave import step
 from utils import IfcFile
 
 
+# for output on a failed step: 
 # use assert False and output inside this assert
 
-
-# see UUID is a IfcSpace test, there AssertionFalse with smart output from utils module
-
+# TODO: for even smarter output on a failed step:
+# see UUID is a IfcSpace test in element_classes.py
+# there own assert types implemented in utils
 
 
 @step("all {ifc_class} elements have an {aproperty} property in the {pset} pset")
@@ -26,9 +27,6 @@ def step_impl(context, ifc_class, aproperty, pset):
             context.falseguids.append(elem.GlobalId)
         context.falseprops[elem.id()] = str(psets) 
 
-    context.falseelems = context.falseelems
-    context.falseguids = context.falseguids
-    context.falseprops = context.falseprops
     if len(context.falseelems) > 0:
         assert False, (
             "Some elemets missing the pset or property:\n{}"
