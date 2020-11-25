@@ -1,4 +1,3 @@
-import json
 from behave import step
 
 from utils import IfcFile
@@ -6,18 +5,21 @@ from utils import IfcFile
 
 @step("there are no {ifc_class} elements because {reason}")
 def step_impl(context, ifc_class, reason):
-    elements = IfcFile.get().by_type(ifc_class)
-    false_elements_elem = []
-    false_elements_guid = []
-    for elem in elements:
-        false_elements_elem.append(str(elem))
-        false_elements_guid.append(elem.GlobalId)
 
-    context.falseguids = false_elements_guid
+    elements = IfcFile.get().by_type(ifc_class)
+
+    context.falseelems = []
+    context.falseguids = []
+    for elem in elements:
+        context.falseelems.append(str(elem))
+        context.falseguids.append(elem.GlobalId)
+
+    context.falseelems = context.falseelems
+    context.falseguids = context.falseguids
     if len(elements) > 0:
         assert False, (
-            "{} elements: {}"
-            .format(ifc_class, json.dumps(false_elements_elem, indent=2))
+            "{} elements:\n{}"
+            .format(context.falseguids)
         )
 
 
@@ -33,48 +35,46 @@ def step_impl(context, ifc_class, pattern):
 
 @step("all {ifc_class} elements have an {representation_class} representation")
 def step_impl(context, ifc_class, representation_class):
-    logfile = open(context.thelogfile, "a")
-    logfile.write("representation test\n")
+
     def is_item_a_representation(item, representation):
         if "/" in representation:
             for cls in representation.split("/"):
                 if item.is_a(cls):
                     return True
         elif item.is_a(representation):
-            logfile.write("{}\n".format(item))
             return True
 
     elements = IfcFile.get().by_type(ifc_class)
-    false_elements_elem = []
-    false_elements_guid = []
+
+    context.falseelems = []
+    context.falseguids = []
+    context.falseprops = {}
+    rep = None
     for elem in elements:
-        logfile.write("{}\n".format(elem))
         if not elem.Representation:
-            logfile.write("    continue{}\n")
             continue
         has_representation = False
         for representation in elem.Representation.Representations:
             for item in representation.Items:
-                logfile.write("    {}\n".format(item))
                 if item.is_a("IfcMappedItem"):
                     # We only check one more level deep.
                     for item2 in item.MappingSource.MappedRepresentation.Items:
                         if is_item_a_representation(item2, representation_class):
                             has_representation = True
+                        rep = item2
                 else:
                     if is_item_a_representation(item, representation_class):
                         has_representation = True
+                    rep = item
         if not has_representation:
-            false_elements_elem.append(str(elem))
-            false_elements_guid.append(elem.GlobalId)
-    logfile.write("{}\n".format(json.dumps(false_elements_elem, indent=2)))
-    logfile.close()
+            context.falseelems.append(str(elem))
+            context.falseguids.append(elem.GlobalId)
+            context.falseprops[elem.id()] = rep
 
-    context.falseguids = false_elements_guid
-    if len(false_elements_elem) > 0:
+    if len(context.falseelems) > 0:
         assert False, (
-            "Some elements are not a IfcFacetedBrep representation: {}"
-            .format(json.dumps(false_elements_elem, indent=2))
+            "Some elements are not a IfcFacetedBrep representation:\n{}"
+            .format(context.falseguids)
         )
 
 

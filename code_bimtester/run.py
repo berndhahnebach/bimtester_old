@@ -232,6 +232,8 @@ def run_intmp_tests(args={}):
         behave_args.extend(args["advanced_arguments"].split())
     elif "console" not in args:
         behave_args.extend([
+            # redirect prints in step methods
+            # if step fails some output is catched, thus might not be printed
             "--no-capture",
             # next two lines are one arg
             "--format",

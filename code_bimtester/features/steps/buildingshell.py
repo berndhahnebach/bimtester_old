@@ -1,71 +1,74 @@
-import json
 from behave import step
 
 from utils import IfcFile
 
 
-# behave needs to be started with a option to redirect prints
-# see bimtesters run module
-# keep in mind on a fail the output is catched and not printed
 # use assert False and output inside this assert
+
+
+# see UUID is a IfcSpace test, there AssertionFalse with smart output from utils module
+
 
 
 @step("all {ifc_class} elements have an {aproperty} property in the {pset} pset")
 def step_impl(context, ifc_class, aproperty, pset):
-    logfile = open(context.thelogfile, "a")
-    logfile.write("PropTest: {}, {}, {}\n".format(ifc_class, aproperty, pset))
+
     elements = IfcFile.get().by_type(ifc_class)
-    false_elements_elem = []
-    false_elements_guid = []
+
+    context.falseelems = []
+    context.falseguids = []
+    context.falseprops = {}
     from ifcopenshell.util.element import get_psets
     for elem in elements:
         psets = get_psets(elem)
         if not (pset in psets and aproperty in psets[pset]):
-            false_elements_elem.append(str(elem))
-            false_elements_guid.append(elem.GlobalId)
-        logfile.write("{} --> {}\n".format(elem.id(), psets))
-    logfile.write("{}\n".format(json.dumps(false_elements_elem, indent=2)))
-    logfile.close()
+            context.falseelems.append(str(elem))
+            context.falseguids.append(elem.GlobalId)
+        context.falseprops[elem.id()] = str(psets) 
 
-    context.falseguids = false_elements_guid
-    if len(false_elements_elem) > 0:
+    context.falseelems = context.falseelems
+    context.falseguids = context.falseguids
+    context.falseprops = context.falseprops
+    if len(context.falseelems) > 0:
         assert False, (
-            "Some elemets missing the pset or property: {}"
-            .format(json.dumps(false_elements_elem, indent=2))
+            "Some elemets missing the pset or property:\n{}"
+            .format(context.falseguids)
         )
-        # see UUID is a IfcSpace test, there AssertionFals with smart output from utils module
 
 
 # "all building elements have an {aproperty} property in the {pset} pset")
 # but than the ambiguous problem, thus use different words
 @step("all parts have an {attribute} attribute in the {myattributesum} attributeset")
 def step_impl(context, attribute, myattributesum):
-    logfile = open(context.thelogfile, "a")
-    logfile.write("PropTest: {}, {}\n".format(attribute, myattributesum))
+
     elements = IfcFile.get().by_type("IfcBuildingElement")
-    false_elements_elem = []
-    false_elements_guid = []
+
+    context.falseelems = []
+    context.falseguids = []
+    context.falseprops = {}
     from ifcopenshell.util.element import get_psets
     for elem in elements:
         psets = get_psets(elem)
         if not (myattributesum in psets and attribute in psets[myattributesum]):
-            false_elements_elem.append(str(elem))
-            false_elements_guid.append(elem.GlobalId)
-        logfile.write("{} --> {}\n".format(elem.id(), psets))
-    logfile.write("{}\n".format(sorted(false_elements_elem)))
-    logfile.close()
+            context.falseelems.append(str(elem))
+            context.falseguids.append(elem.GlobalId)
+        context.falseprops[elem.id()] = str(psets) 
 
-    context.falseguids = false_elements_guid
-    if len(false_elements_elem) > 0:
+    if len(context.falseelems) > 0:
         assert False, (
-            "Some elemets missing the pset or property: {}"
-            .format(json.dumps(false_elements_elem, indent=2))
+            "Some elemets missing the pset or property:\n{}"
+            .format(context.falseguids)
         )
 
 
 @step("all elements must have a shape without errors")
 def step_impl(context):
+
     elements = IfcFile.get().by_type("IfcBuildingElement")
+
+    context.falseelems = []
+    context.falseguids = []
+    context.falseprops = {}
 
     import Part  # FreeCAD is needed
     # bernds geometry check is needed
@@ -79,8 +82,6 @@ def step_impl(context):
     settings.set(settings.SEW_SHELLS, True)
     settings.set(settings.USE_WORLD_COORDS, True)
 
-    false_elements_error = {}
-    false_elements_guid = []
     for elem in elements:
         # TODO: some print and update gui and or flush, this could take time
         try:
@@ -96,16 +97,17 @@ def step_impl(context):
             shape.scale(1000.0)  # IfcOpenShell always outputs in meters
             error = geomchecks.checkSolidGeometry(shape)
         else:
-            error = "  IfcOpenShell failed to process the geometric representation."
+            error = "  IfcOS failed to process the geometric representation."
         if error != "":
-            print(error)
+            # the error is printed in the geomchecks method allready
+            # print(error)
             Part.show(shape)
-            false_elements_error[elem.id()] = error
-            false_elements_guid.append(elem.GlobalId)
+            context.falseelems.append(str(elem))
+            context.falseguids.append(elem.GlobalId)
+            context.falseprops[elem.id()] = error
 
-    context.falseguids = false_elements_guid
-    if len(false_elements_error) > 0:
+    if len(context.falseelems) > 0:
         assert False, (
-            "Geometry elements errors: {}"
-            .format(json.dumps(false_elements_error, indent=2))
+            "Geometry elements errors:\n{}"
+            .format(context.falseguids)
         )
