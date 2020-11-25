@@ -26,7 +26,7 @@ from PySide import QtGui
 
 import FreeCADGui
 
-from code_bimtester.guiwidget import GuiWidgetBimTester as TaskPanel
+from code_bimtester.bimtester.guiwidget import GuiWidgetBimTester as TaskPanel
 
 
 """

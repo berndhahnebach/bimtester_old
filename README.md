@@ -1,3 +1,10 @@
+# BIMTester
+### BIMTester code in FreeCAD
++ ATM bimtester code is copied into the FreeCAD bimtester module for for the sake of convenience
++ TODO bimtester should be installed in conjunction with ifcopenshell
++ to /urs/local by make install
+
+>>>>>>> 82c560b... move bimtester code into a new package directory
 ### Generall information
 + the ifc should not be on a windows network resource
 + ATM it has to be locally
@@ -43,15 +50,15 @@
 ##### outside FreeCAD in a shell
 + behave pystache etc needs to be installed on windows (anaconda) if outside FreeCAD
 ```
-python3 /home/hugo/.FreeCAD/Mod/bimtester/guistartbimtester.py
-python C:\Users\BHA\AppData\Roaming\FreeCAD\Mod\bimtester\guistartbimtester.py
+python3 /home/hugo/.FreeCAD/Mod/bimtester/code_bimtester/guibimtester.py
+python C:\Users\BHA\AppData\Roaming\FreeCAD\Mod\bimtester\code_bimtester\guibimtester.py
 ```
 
 ##### outside FreeCAD inside Python
 ```
 import sys
-sys.path.append("/home/hugo/.FreeCAD/Mod/bimtester/")
-from  guistartbimtester import show_widget
+sys.path.append("/home/hugo/.FreeCAD/Mod/bimtester/code_bimtester")
+from  guibimtester import show_widget
 show_widget()
 ```
 
@@ -59,7 +66,7 @@ show_widget()
 ```
 import sys
 from PySide2 import QtWidgets
-from code_bimtester.guiwidget import GuiWidgetBimTester
+from code_bimtester.bimtester.guiwidget import GuiWidgetBimTester
 app = QtWidgets.QApplication(sys.argv)
 form = GuiWidgetBimTester()
 form.show()

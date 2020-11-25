@@ -44,7 +44,7 @@ def open(filename):
     print(the_ifcfile_path)
     print(the_ifcfile_name)
 
-    from code_bimtester.run import run_all
+    from code_bimtester.bimtester.run import run_all
     status = run_all(
         the_features_path,
         the_ifcfile_path,
