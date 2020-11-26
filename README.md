@@ -4,7 +4,6 @@
 + TODO bimtester should be installed in conjunction with ifcopenshell
 + to /urs/local by make install
 
->>>>>>> 82c560b... move bimtester code into a new package directory
 ### Generall information
 + the ifc should not be on a windows network resource
 + ATM it has to be locally
