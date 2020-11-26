@@ -1,6 +1,5 @@
 from behave import step
 
-from utils import assert_attribute
 from utils import IfcFile
 
 
