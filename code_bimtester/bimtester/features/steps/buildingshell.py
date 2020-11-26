@@ -34,31 +34,6 @@ def step_impl(context, ifc_class, aproperty, pset):
         )
 
 
-# "all building elements have an {aproperty} property in the {pset} pset")
-# but than the ambiguous problem, thus use different words
-@step("all parts have an {attribute} attribute in the {myattributesum} attributeset")
-def step_impl(context, attribute, myattributesum):
-
-    elements = IfcFile.get().by_type("IfcBuildingElement")
-
-    context.falseelems = []
-    context.falseguids = []
-    context.falseprops = {}
-    from ifcopenshell.util.element import get_psets
-    for elem in elements:
-        psets = get_psets(elem)
-        if not (myattributesum in psets and attribute in psets[myattributesum]):
-            context.falseelems.append(str(elem))
-            context.falseguids.append(elem.GlobalId)
-        context.falseprops[elem.id()] = str(psets) 
-
-    if len(context.falseelems) > 0:
-        assert False, (
-            "Some elemets missing the pset or property:\n{}"
-            .format(context.falseguids)
-        )
-
-
 @step("all elements must have a shape without errors")
 def step_impl(context):
 
