@@ -1,9 +1,7 @@
-import os
-
 from behave import step
 
+from utils import assert_attribute
 from utils import IfcFile
-from utils import IfcFile, assert_attribute
 
 
 @step('The IFC file "{file}" must be provided')
