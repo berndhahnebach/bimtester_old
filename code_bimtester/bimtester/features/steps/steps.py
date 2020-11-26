@@ -3,6 +3,15 @@ from behave import step
 from utils import IfcFile
 
 
+# for output on a failed step: 
+# use assert False and output inside this assert
+
+# TODO: for even smarter output on a failed step:
+# see UUID is a IfcSpace test in element_classes.py
+# there own assert types implemented in utils
+# or see geolocation assert_pset
+
+
 @step("there are no {ifc_class} elements because {reason}")
 def step_impl(context, ifc_class, reason):
 
@@ -72,6 +81,29 @@ def step_impl(context, ifc_class, representation_class):
     if len(context.falseelems) > 0:
         assert False, (
             "Some elements are not a IfcFacetedBrep representation:\n{}"
+            .format(context.falseguids)
+        )
+
+
+@step("all {ifc_class} elements have an {aproperty} property in the {pset} pset")
+def step_impl(context, ifc_class, aproperty, pset):
+
+    elements = IfcFile.get().by_type(ifc_class)
+
+    context.falseelems = []
+    context.falseguids = []
+    context.falseprops = {}
+    from ifcopenshell.util.element import get_psets
+    for elem in elements:
+        psets = get_psets(elem)
+        if not (pset in psets and aproperty in psets[pset]):
+            context.falseelems.append(str(elem))
+            context.falseguids.append(elem.GlobalId)
+        context.falseprops[elem.id()] = str(psets) 
+
+    if len(context.falseelems) > 0:
+        assert False, (
+            "Some elemets missing the pset or property:\n{}"
             .format(context.falseguids)
         )
 
