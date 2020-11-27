@@ -12,19 +12,27 @@ from .run import run_all
 
 class GuiWidgetBimTester(QtWidgets.QWidget):
 
-    # get some initial values
-    this_path = os.path.join(os.path.dirname(__file__))
-    desktop_path = os.path.join(os.path.expanduser("~"), "Desktop")
-
-    initial_ifcfile = "/home/hugo/Documents/zeug_sort/z_some_ifc/example_model.ifc"
-    if not os.path.isfile(initial_ifcfile):
-        initial_ifcfile = desktop_path
-    initial_featurespath = os.path.join(this_path, "..", "..", "features_bimtester", "fea_min")
-    if not os.path.isdir(initial_featurespath):
-        initial_featurespath = desktop_path
-
-    def __init__(self):
+    def __init__(
+        self,
+        features="",
+        ifcfile=""
+    ):
         super(GuiWidgetBimTester, self).__init__()
+
+        # get some initial values
+        print(features)
+        print(ifcfile)
+        user_path = os.path.expanduser("~")
+        if ifcfile:
+            self.initial_ifcfile = ifcfile
+        if not os.path.isfile(self.initial_ifcfile):
+            self.initial_ifcfile = user_path
+        if features:
+            self.initial_featurespath = features
+        if not os.path.isdir(self.initial_featurespath):
+            self.initial_featurespath = user_path
+
+        # init ui
         self._setup_ui()
 
     def __del__(self,):

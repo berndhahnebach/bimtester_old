@@ -7,7 +7,7 @@ from bimtester import reports
 from bimtester import run
 
 
-def show_widget():
+def show_widget(features="", ifcfile=""):
 
     import sys
     from PySide2 import QtWidgets
@@ -18,7 +18,7 @@ def show_widget():
     app = QtWidgets.QApplication(sys.argv)
 
     # Create and show the form
-    form = GuiWidgetBimTester()
+    form = GuiWidgetBimTester(features, ifcfile)
     form.show()
 
     # Run the main Qt loop

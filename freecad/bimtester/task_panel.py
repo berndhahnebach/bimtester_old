@@ -36,10 +36,22 @@ tp.show_panel()
 """
 
 
+# TODO read features and ifcfile in FreeCAD from user pref
+
+
 def show_panel():
+    from bimtesterdata_features import package_path
+    init_panel(
+        os.path.join(package_path, "fea_min"),
+        "C:/Users/BHA/Desktop/geomtest/Wand_Decke.ifc",
+        #"/home/hugo/Documents/zeug_sort/z_some_ifc/example_model.ifc"
+    )
+
+
+def init_panel(features="", ifcfile=""):
     QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
     mw = FreeCADGui.getMainWindow()
     awidget = QtGui.QDockWidget("BimTesterGui", mw)
-    awidget.setWidget(TaskPanel())
+    awidget.setWidget(TaskPanel(features, ifcfile))
     mw.addDockWidget(QtCore.Qt.RightDockWidgetArea, awidget)
     QtGui.QApplication.restoreOverrideCursor()
