@@ -1,5 +1,6 @@
 # TODO: improve layout, start with feature file path and beside button !!!!!
 # TODO: if browse widgets will be canceled, last QLineEdit should be restored
+# TODO: keep path or file if in browse widget canceled
 
 import os
 
@@ -20,17 +21,15 @@ class GuiWidgetBimTester(QtWidgets.QWidget):
         super(GuiWidgetBimTester, self).__init__()
 
         # get some initial values
-        print(features)
-        print(ifcfile)
         user_path = os.path.expanduser("~")
-        if ifcfile:
-            self.initial_ifcfile = ifcfile
-        if not os.path.isfile(self.initial_ifcfile):
-            self.initial_ifcfile = user_path
-        if features:
-            self.initial_featurespath = features
+        print(features)
+        self.initial_featurespath = features
         if not os.path.isdir(self.initial_featurespath):
             self.initial_featurespath = user_path
+        print(ifcfile)
+        self.initial_ifcfile = ifcfile
+        if not os.path.isfile(self.initial_ifcfile):
+            self.initial_ifcfile = user_path
 
         # init ui
         self._setup_ui()
