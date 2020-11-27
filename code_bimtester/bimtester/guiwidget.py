@@ -180,8 +180,6 @@ class GuiWidgetBimTester(QtWidgets.QWidget):
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
 
         # get input values
-        splitifcpath = os.path.split(self.get_ifcfile())
-        the_ifcfile_path, the_ifcfile_name = splitifcpath[0], splitifcpath[1]
         if self.featuredirfromifc_cb.isChecked() is True:
             the_features_path = the_ifcfile_path
             print(
@@ -190,15 +188,14 @@ class GuiWidgetBimTester(QtWidgets.QWidget):
             )
         else:
             the_features_path = self.get_featurefilesdir()
+        the_ifcfile = self.get_ifcfile()
         print(the_features_path)
-        print(the_ifcfile_path)
-        print(the_ifcfile_name)
+        print(the_ifcfile)
 
         # run bimtester
         status = run_all(
             the_features_path,
-            the_ifcfile_path,
-            the_ifcfile_name
+            the_ifcfile,
         )
         print(status)
 

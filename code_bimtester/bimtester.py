@@ -69,6 +69,7 @@ if __name__ == "__main__":
         help="Start with gui",
     )
     args = vars(parser.parse_args())
+    print(args)
 
     if args["purge"]:
         clean.TestPurger().purge()
