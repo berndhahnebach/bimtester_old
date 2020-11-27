@@ -40,9 +40,18 @@ def step_impl(context):
     context.falseguids = []
     context.falseprops = {}
 
+    try:
+        import FreeCAD
+    except Exception:
+        assert False, (
+            "FreeCAD python module could not be imported. "
+            "Thus the test was not performed."
+        )
+
+    # TODO import FreeCAD, to be able to run from outside FreeCAD
     import Part  # FreeCAD is needed
     # bernds geometry check is needed
-    from bimstatiktools import geomchecks
+    from bimstatiktools import geomchecks  # TODO move into FreeCAD main source
     from importlib import reload
     reload(geomchecks)
 
