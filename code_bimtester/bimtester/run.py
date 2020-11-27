@@ -73,6 +73,8 @@ def get_features(args):
     return has_features
 
 
+
+
 """
 # clean logs to be able to run tests
 # once again but on another building model and in another directory
@@ -88,58 +90,40 @@ reset_runtime()
 """
 
 
-"""
-from code_bimtester.bimtester import run
-myfeatures = "/home/hugo/.FreeCAD/Mod/bimtester/features_bimtester/fea_min/"
-myifcfile = "/home/hugo/Documents/zeug_sort/z_some_ifc/example_model.ifc"
-run.run_all(myfeatures, myifcfile)
-
-
-# this does not work ATM ... TODO
-from code_bimtester.bimtester import run
-myfeatures_path = "/home/hugo/Documents/zeug_sort/ifcos_bimtester/myrun/"
-run.run_all(myfeatures_path, myfeatures_path)
-
-"""
-
-
 # TODO: if the ifc file name or path contains special character
 # like German Umlaute behave gives an error
-
-
-# TODO: make all the following working and dokument them
-# arguments feature_path and ifc_file
-#
-# both is given:
-# replace the ifc in feature files
-#
-# feature_path only is given:
-# use the ifc provided in the feature files
-#
-# ifc_file only is given:
-# assume feature files are in the directory of the ifc
-#
-# none of both is given:
-# use current directory and the ifc from feature files
-
-
-# TODO: add arg for run_intmp_tests() to bimtester.py
 
 
 def run_intmp_tests(args={}):
 
     """
     run bimtester unit test in a temporary directory
-    TODO: see ccxtool in FreeCAD for some documentation style
+    features, steps and environment.py are copied to a temp directory
 
-    args:
-    - the recognized keys are documented only
-    - advanced_arguments:
-        they will be directly passed to the behave call
-    - features:
+    Keys of parameter args
+    ----------------------
+    features: optional (ATM mandatory)
         the path the features directory with feature files is in
-    - ifcfile:
+    ifcfile:  optional (ATM mandatory)
         the ifc file
+    advanced_arguments: optional
+        they will be directly passed to the behave call
+
+    features and ifcfile are given:
+    the ifcfile in feature files is replaced 
+
+    features only is given (TODO):
+    the ifcfile provided in the feature files is used
+
+    ifcfile only is given (TODO):
+    features = ifcfile directory
+    the ifcfile in feature files is replaced 
+
+    none of both is given (TODO):
+    the current directory = features
+    the ifcfile provided in the feature files is used
+
+    TODO: if the above is implemented adapt signature of run_all
     """
 
     from behave import __version__ as behave_version
@@ -150,11 +134,6 @@ def run_intmp_tests(args={}):
             .format(behave_version)
         )
         return False
-
-    # mandatory parameter: ifcdir, featuredir
-    # optional parameter: ifcfilename
-    # copy features and steps to tmp, replace ifcdir in features files
-    # run
 
     # get the features_path, the feature files where the tests are in
     if "features" in args and args["features"] != "":
@@ -297,36 +276,35 @@ def run_intmp_tests(args={}):
 
 def run_all(the_features_path, the_ifcfile):
 
-    # feature files
-    feature_files = os.listdir(
-        os.path.join(the_features_path, "features")
-    )
-    # print(feature_files)
-
     # run bimtester
     runpath = run_intmp_tests({
         "features": the_features_path,
         "ifcfile": the_ifcfile
     })
-
-    # create html report
-    from .reports import generate_report
     print(runpath)
-    if runpath is not False:
-        if os.path.isdir(runpath):
-            generate_report(runpath)
 
-        # open the webbrowser
-        for ff in feature_files:
-            webbrowser.open(os.path.join(
-                runpath,
-                "report",
-                ff + ".html"
-            ))
-        else:
-            print("runpath does not exist. This should not happen. Debug")
-    else:
+    # check if it worked out well
+    if runpath is False:
         print("BIMTester behave tests returned False.")
         return False
+
+    if not os.path.isdir(runpath):
+        print("runpath does not exist. This should not happen. Debug")
+        return False
+
+    # create html report and open in webbrowser
+    from .reports import generate_report
+    generate_report(runpath)
+    # get the feature files
+    feature_files = os.listdir(
+        os.path.join(the_features_path, "features")
+    )
+    # print(feature_files)
+    for ff in feature_files:
+        webbrowser.open(os.path.join(
+            runpath,
+            "report",
+            ff + ".html"
+        ))
 
     return True
