@@ -43,8 +43,8 @@ def show_panel():
     from bimtesterdata_features import package_path
     init_panel(
         os.path.join(package_path, "fea_min"),
-        "C:/Users/BHA/Desktop/geomtest/Wand_Decke.ifc",
-        #"/home/hugo/Documents/zeug_sort/z_some_ifc/example_model.ifc"
+        # "C:/Users/BHA/Desktop/geomtest/Wand_Decke.ifc",
+        "/home/hugo/Documents/zeug_sort/z_some_ifc/example_model.ifc"
     )
 
 
