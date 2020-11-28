@@ -19,14 +19,16 @@
 # *                                                                         *
 # ***************************************************************************
 
-import os
+# import os
 
 from PySide import QtCore
 from PySide import QtGui
 
-import FreeCAD
+# import FreeCAD
 import FreeCADGui
 
+from .utils_gui import get_default_featuresdir
+from .utils_gui import get_default_ifcfile
 from code_bimtester.bimtester.guiwidget import GuiWidgetBimTester as TaskPanel
 
 
@@ -37,34 +39,15 @@ tp.show_panel()
 """
 
 
-def show_panel():
+def show_panel(features="", ifcfile=""):
 
-    # get defaults
-    user_path = os.path.expanduser("~")
-    bimtester_prefs = FreeCAD.ParamGet(
-        "User parameter:BaseApp/Preferences/Mod/BIMTester/Defaults"
-    )
-
-    featuresdir = bimtester_prefs.GetString("FeaturesDirectory", "")
-    if featuresdir == "":
-        FreeCAD.ParamGet(
-            "User parameter:BaseApp/Preferences/Mod/BIMTester/Defaults"
-        ).SetString("FeaturesDirectory", user_path)
-    if not os.path.isdir(featuresdir):
-        featuresdir = user_path
-
-    ifcfile = bimtester_prefs.GetString("IFCFile", "")
+    if features == "":
+        features = get_default_featuresdir()
     if ifcfile == "":
-        FreeCAD.ParamGet(
-            "User parameter:BaseApp/Preferences/Mod/BIMTester/Defaults"
-        ).SetString("IFCFile", user_path)
-    if not os.path.isfile(ifcfile):
-        ifcfile = user_path
+        ifcfile = get_default_ifcfile()
+    # print(features)
+    # print(ifcfile)
 
-    init_panel(featuresdir, ifcfile)
-
-
-def init_panel(features="", ifcfile=""):
     QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
     mw = FreeCADGui.getMainWindow()
     awidget = QtGui.QDockWidget("BimTesterGui", mw)

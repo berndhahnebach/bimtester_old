@@ -1,8 +1,6 @@
 # ***************************************************************************
 # *   Copyright (c) 2020 Bernd Hahnebach <bernd@bimstatik.org>              *
 # *                                                                         *
-# *   This file is part of the FreeCAD CAx development system.              *
-# *                                                                         *
 # *   This program is free software; you can redistribute it and/or modify  *
 # *   it under the terms of the GNU Lesser General Public License (LGPL)    *
 # *   as published by the Free Software Foundation; either version 2 of     *
@@ -21,16 +19,49 @@
 # *                                                                         *
 # ***************************************************************************
 
-from os.path import dirname
-from os.path import realpath
+import os
 
 import FreeCAD
 
 
-module_path = dirname(realpath(__file__))
+def get_default_featuresdir():
+
+    from features_bimtester import package_path
+    min_feature_path = os.path.join(package_path, "fea_min")
+
+    bimtester_prefs = FreeCAD.ParamGet(
+        "User parameter:BaseApp/Preferences/Mod/BIMTester/Defaults"
+    )
+    featuresdir = bimtester_prefs.GetString("FeaturesDirectory", "")
+
+    if featuresdir == "":
+        FreeCAD.ParamGet(
+            "User parameter:BaseApp/Preferences/Mod/BIMTester/Defaults"
+        ).SetString("FeaturesDirectory", min_feature_path)
+    # print(min_feature_path)
+
+    if not os.path.isdir(featuresdir):
+        featuresdir = min_feature_path
+    # print(featuresdir)
+
+    return featuresdir
 
 
-FreeCAD.addImportType(
-    "1 run BimTester (*.ifc)",
-    "freecad.bimtester.import_ifc"
-)
+def get_default_ifcfile():
+
+    user_path = os.path.expanduser("~")
+    bimtester_prefs = FreeCAD.ParamGet(
+        "User parameter:BaseApp/Preferences/Mod/BIMTester/Defaults"
+    )
+    ifcfile = bimtester_prefs.GetString("IFCFile", "")
+
+    if ifcfile == "":
+        FreeCAD.ParamGet(
+            "User parameter:BaseApp/Preferences/Mod/BIMTester/Defaults"
+        ).SetString("IFCFile", user_path)
+
+    if not os.path.isfile(ifcfile):
+        ifcfile = user_path
+    # print(ifcfile)
+
+    return ifcfile

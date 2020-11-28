@@ -19,9 +19,9 @@
 # *                                                                         *
 # ***************************************************************************
 
-import os
+# import os
 
-# import FreeCAD
+import FreeCAD
 
 
 if open.__module__ == "io":
@@ -31,24 +31,16 @@ if open.__module__ == "io":
 
 def open(filename):
 
-    # ifc file
-    # print(filename)
-    splitpath = os.path.split(filename)
-    the_ifcfile_path, the_ifcfile_name = splitpath[0], splitpath[1]
-
     # feature files path
-    import features_bimtester
-    the_features_path = os.path.split(features_bimtester.__file__)[0]
+    from .utils_gui import get_default_featuresdir
+    featuresdir = get_default_featuresdir()
 
-    print(the_features_path)
-    print(the_ifcfile_path)
-    print(the_ifcfile_name)
-
-    from code_bimtester.bimtester.run import run_all
-    status = run_all(
-        the_features_path,
-        the_ifcfile_path,
-        the_ifcfile_name
-    )
-
-    return status
+    if FreeCAD.GuiUp:
+        from freecad.bimtester import task_panel
+        task_panel.show_panel(featuresdir, filename)
+    else:
+        from code_bimtester.bimtester.run import run_all
+        status = run_all(
+            featuresdir,
+            filename
+        )

@@ -20,16 +20,20 @@ class GuiWidgetBimTester(QtWidgets.QWidget):
     ):
         super(GuiWidgetBimTester, self).__init__()
 
-        # get some initial values
+        # get features dir
         user_path = os.path.expanduser("~")
-        print(features)
+        # print(features)
         self.initial_featurespath = features
         if not os.path.isdir(self.initial_featurespath):
             self.initial_featurespath = user_path
-        print(ifcfile)
+        print(self.initial_featurespath)
+
+        # get ifc file
+        # print(ifcfile)
         self.initial_ifcfile = ifcfile
         if not os.path.isfile(self.initial_ifcfile):
             self.initial_ifcfile = user_path
+        print(self.initial_ifcfile)
 
         # init ui
         self._setup_ui()
@@ -58,7 +62,10 @@ class GuiWidgetBimTester(QtWidgets.QWidget):
         theicon = QtSvg.QSvgWidget(iconpath)
         # none works ...
         #theicon.setGeometry(20,20,200,200)
-        #theicon.setSizePolicy(QtGui.QSizePolicy.Policy.Maximum, QtGui.QSizePolicy.Policy.Maximum)
+        #theicon.setSizePolicy(
+        #    QtGui.QSizePolicy.Policy.Maximum,
+        #    QtGui.QSizePolicy.Policy.Maximum
+        #)
         #theicon.sizeHint()
         """
         # as pixmap
@@ -186,17 +193,21 @@ class GuiWidgetBimTester(QtWidgets.QWidget):
         print("Run BIMTester")
         QtWidgets.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
 
-        # get input values
+        # get features dir
         if self.featuredirfromifc_cb.isChecked() is True:
-            the_features_path = the_ifcfile_path
+            the_features_path = os.path.dirname(os.path.realpath(
+                self.get_ifcfile()
+            ))
             print(
                 "Make sure the feature files are beside "
                 "the ifc file in a directory named 'features'."
             )
         else:
             the_features_path = self.get_featurefilesdir()
-        the_ifcfile = self.get_ifcfile()
         print(the_features_path)
+
+        # get ifc file
+        the_ifcfile = self.get_ifcfile()
         print(the_ifcfile)
 
         # run bimtester
