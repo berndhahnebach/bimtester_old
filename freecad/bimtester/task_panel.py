@@ -24,6 +24,7 @@ import os
 from PySide import QtCore
 from PySide import QtGui
 
+import FreeCAD
 import FreeCADGui
 
 from code_bimtester.bimtester.guiwidget import GuiWidgetBimTester as TaskPanel
@@ -36,16 +37,31 @@ tp.show_panel()
 """
 
 
-# TODO read features and ifcfile in FreeCAD from user pref
-
-
 def show_panel():
-    from bimtesterdata_features import package_path
-    init_panel(
-        os.path.join(package_path, "fea_min"),
-        # "C:/Users/BHA/Desktop/geomtest/Wand_Decke.ifc",
-        "/home/hugo/Documents/zeug_sort/z_some_ifc/example_model.ifc"
+
+    # get defaults
+    user_path = os.path.expanduser("~")
+    bimtester_prefs = FreeCAD.ParamGet(
+        "User parameter:BaseApp/Preferences/Mod/BIMTester/Defaults"
     )
+
+    featuresdir = bimtester_prefs.GetString("FeaturesDirectory", "")
+    if featuresdir == "":
+        FreeCAD.ParamGet(
+            "User parameter:BaseApp/Preferences/Mod/BIMTester/Defaults"
+        ).SetString("FeaturesDirectory", user_path)
+    if not os.path.isdir(featuresdir):
+        featuresdir = user_path
+
+    ifcfile = bimtester_prefs.GetString("IFCFile", "")
+    if ifcfile == "":
+        FreeCAD.ParamGet(
+            "User parameter:BaseApp/Preferences/Mod/BIMTester/Defaults"
+        ).SetString("IFCFile", user_path)
+    if not os.path.isfile(ifcfile):
+        ifcfile = user_path
+
+    init_panel(featuresdir, ifcfile)
 
 
 def init_panel(features="", ifcfile=""):
