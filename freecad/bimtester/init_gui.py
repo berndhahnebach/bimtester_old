@@ -72,7 +72,7 @@ class TOOL1():
     def GetResources(self):
         from code_bimtester.bimtester import code_bimtester_path
         return {
-            "Pixmap": os.path.join(code_bimtester_path, "resources", "icons", "bimtester.svg"),
+            "Pixmap": os.path.join(code_bimtester_path, "resources", "icons", "bimtester.ico"),
             "MenuText": "TOOL1",
             "ToolTip": "Start BIMTester task panel"
         }

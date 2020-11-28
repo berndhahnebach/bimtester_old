@@ -50,7 +50,7 @@ class GuiWidgetBimTester(QtWidgets.QWidget):
         # print(__file__)
         package_path = os.path.dirname(os.path.realpath(__file__))
         iconpath = os.path.join(
-            package_path, "resources", "icons", "bimtester.svg"
+            package_path, "resources", "icons", "bimtester.ico"
         )
         """
         # as svg

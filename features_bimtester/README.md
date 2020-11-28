@@ -1,5 +1,3 @@
-+ all files in directory features should be feature files
++ the directory chooses to be used by bimtester should contain a directory called features
++ files in the directory features should be feature files
 + all files in directory features will be used
-+ here in this directory might be as much as the user wants files
-+ they will not be used
-
