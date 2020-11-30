@@ -40,6 +40,8 @@ def step_impl(context):
     context.falseguids = []
     context.falseprops = {}
 
+    # FreeCAD is needed
+    # TODO import FreeCAD, to be able to run from outside FreeCAD
     try:
         import FreeCAD
     except Exception:
@@ -48,13 +50,19 @@ def step_impl(context):
             "Thus the test was not performed."
         )
 
-    # TODO import FreeCAD, to be able to run from outside FreeCAD
-    import Part  # FreeCAD is needed
     # bernds geometry check is needed
-    from bimstatiktools import geomchecks  # TODO move into FreeCAD main source
-    from importlib import reload
-    reload(geomchecks)
+    # TODO move into FreeCAD main source
+    try:
+        from bimstatiktools import geomchecks
+        # from importlib import reload
+        # reload(geomchecks)
+    except Exception:
+        assert False, (
+            "BIMStatik geom check module could not be imported."
+            "Thus the test was not performed."
+        )
 
+    import Part
     from ifcopenshell import geom as ifcgeom
     settings = ifcgeom.settings()
     settings.set(settings.USE_BREP_DATA, True)
