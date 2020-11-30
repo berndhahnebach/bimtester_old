@@ -1,5 +1,9 @@
 # BIMTester
-### Installation:
+### Screen shot
+![BIMTester screen](screen.png "BIMTester in action")
+
+
+### Installation and run
 + Install via AddOn manager
 + Install missing dependencies
     + behave (at least 1.2.6)
