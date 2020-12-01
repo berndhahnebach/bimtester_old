@@ -30,6 +30,32 @@ def step_impl(context, ifc_class, reason):
         )
 
 
+@step('all {ifc_class} elements have a name given')
+def step_impl(context, ifc_class):
+
+    elements = IfcFile.get().by_type(ifc_class)
+    for elem in elements:
+        print(elem.Name)
+        if not elem.Name:
+            assert False, (
+                "The name of some {} is not set: {}"
+                .format(ifc_class, elem.Name)
+            )
+
+
+@step('all {ifc_class} elements have a description given')
+def step_impl(context, ifc_class):
+
+    elements = IfcFile.get().by_type(ifc_class)
+    for elem in elements:
+        print(elem.Description)
+        if not elem.Description:
+            assert False, (
+                "The description of some {} is not set: {}"
+                .format(ifc_class, elem.Description)
+            )
+
+
 @step('all {ifc_class} elements have a name matching the pattern "{pattern}"')
 def step_impl(context, ifc_class, pattern):
     import re
