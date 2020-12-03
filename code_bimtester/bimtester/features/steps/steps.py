@@ -3,7 +3,7 @@ from behave import step
 from utils import IfcFile
 
 
-# for output on a failed step: 
+# for output on a failed step:
 # use assert False and output inside this assert
 
 # TODO: for even smarter output on a failed step:
@@ -15,45 +15,153 @@ from utils import IfcFile
 @step("there are no {ifc_class} elements because {reason}")
 def step_impl(context, ifc_class, reason):
 
-    elements = IfcFile.get().by_type(ifc_class)
-
     context.falseelems = []
     context.falseguids = []
+
+    elements = IfcFile.get().by_type(ifc_class)
+    elemcount = len(elements)
     for elem in elements:
         context.falseelems.append(str(elem))
         context.falseguids.append(elem.GlobalId)
 
-    if len(elements) > 0:
+    falsecount = len(context.falseelems)
+    if elemcount == 0:
         assert False, (
-            "{} elements:\n{}"
-            .format(ifc_class, context.falseguids)
+            "There are no {} elements in the IFC file."
+            .format(ifc_class)
+        )
+    if falsecount == elemcount:
+        assert False, (
+            "All {} elements in the file are {}."
+            .format(elemcount, ifc_class)
+        )
+    if falsecount > 0:
+        assert False, (
+            "{} of {} element are {} elements: {}"
+            .format(falsecount, elemcount, ifc_class, context.falseelems)
         )
 
 
 @step('all {ifc_class} elements have a name given')
 def step_impl(context, ifc_class):
 
+    context.falseelems = []
+    context.falseguids = []
+
     elements = IfcFile.get().by_type(ifc_class)
+    elemcount = len(elements)
     for elem in elements:
-        print(elem.Name)
+        # print(elem.Name)
         if not elem.Name:
-            assert False, (
-                "The name of some {} is not set: {}"
-                .format(ifc_class, elem.Name)
-            )
+            context.falseelems.append(str(elem))
+            context.falseguids.append(elem.GlobalId)
+ 
+    falsecount = len(context.falseelems)
+    if elemcount == 0:
+        assert False, (
+            "There are no {} elements in the IFC file."
+            .format(ifc_class)
+        )
+    if falsecount == elemcount:
+        assert False, (
+            "The name of all {} {} elements is not set."
+            .format(elemcount, ifc_class)
+        )
+    if falsecount > 0:
+        assert False, (
+            "The name of {} out of {} {} elements is not set."
+            .format(falsecount, elemcount, ifc_class, context.falseelems)
+        )
 
 
 @step('all {ifc_class} elements have a description given')
 def step_impl(context, ifc_class):
 
+    context.falseelems = []
+    context.falseguids = []
+
     elements = IfcFile.get().by_type(ifc_class)
+    elemcount = len(elements)
     for elem in elements:
-        print(elem.Description)
+        # print(elem.Description)
         if not elem.Description:
-            assert False, (
-                "The description of some {} is not set: {}"
-                .format(ifc_class, elem.Description)
-            )
+            context.falseelems.append(str(elem))
+            context.falseguids.append(elem.GlobalId)
+ 
+    falsecount = len(context.falseelems)
+    if elemcount == 0:
+        assert False, (
+            "There are no {} elements in the IFC file."
+            .format(ifc_class)
+        )
+    if falsecount == elemcount:
+        assert False, (
+            "The description of all {} {} elements is not set."
+            .format(elemcount, ifc_class)
+        )
+    if falsecount > 0:
+        assert False, (
+            "The description of {} out of {} {} elements is not set."
+            .format(falsecount, elemcount, ifc_class, context.falseelems)
+        )
+
+
+@step('all {ifc_class} elements class attributes have a value')
+def step_impl(context, ifc_class):
+
+    # schema = IfcFile.get().schema
+    # TODO fix next tow lines
+    import ifcopenshell
+    # schema = ifcopenshell.ifcopenshell_wrapper.schema_by_name("IFC2X3")
+    schema = ifcopenshell.ifcopenshell_wrapper.schema_by_name(IfcFile.get().schema)
+    # print(schema)  # some class
+    # print(IfcFile.get().schema)  # string
+    # some class is needed
+
+    class_attributes = []
+    for cl_attrib in schema.declaration_by_name(ifc_class).all_attributes():
+        class_attributes.append(cl_attrib.name())
+    print(class_attributes)
+
+    context.falseelems = []
+    context.falseguids = []
+    context.falseprops = {}
+
+    elements = IfcFile.get().by_type(ifc_class)
+    elemcount = len(elements)
+    for elem in elements:
+        failed_attribs = []
+        elem_failed = False
+        for cl_attrib in class_attributes:
+            attrib_value = getattr(elem, cl_attrib)
+            if not attrib_value:
+               elem_failed = True
+               failed_attribs.append(cl_attrib)
+               # print(attrib_value)
+        if elem_failed is True:
+            context.falseelems.append(str(elem))
+            context.falseguids.append(elem.GlobalId)
+            context.falseprops[elem.id()] = failed_attribs
+
+    falsecount = len(context.falseelems)
+    if elemcount == 0:
+        assert False, (
+            "There are no {} elements in the IFC file."
+            .format(ifc_class)
+        )
+    if falsecount == elemcount:
+        assert False, (
+            "For all {} {} elements at least one of "
+            "the class attributes has no value."
+            .format(elemcount, ifc_class)
+        )
+    if falsecount > 0:
+        assert False, (
+            "For the following {} of {} {} elements "
+            "at least one of the class attributes has no value: {}"
+            .format(falsecount, elemcount, ifc_class, context.falseelems)
+        )
+    # TODO output which attributs are None
 
 
 @step('all {ifc_class} elements have a name matching the pattern "{pattern}"')
@@ -77,12 +185,13 @@ def step_impl(context, ifc_class, representation_class):
         elif item.is_a(representation):
             return True
 
-    elements = IfcFile.get().by_type(ifc_class)
-
     context.falseelems = []
     context.falseguids = []
     context.falseprops = {}
     rep = None
+
+    elements = IfcFile.get().by_type(ifc_class)
+    elemcount = len(elements)
     for elem in elements:
         if not elem.Representation:
             continue
@@ -104,28 +213,68 @@ def step_impl(context, ifc_class, representation_class):
             context.falseguids.append(elem.GlobalId)
             context.falseprops[elem.id()] = str(rep)
 
-    if len(context.falseelems) > 0:
+    falsecount = len(context.falseelems)
+    if elemcount == 0:
         assert False, (
-            "Some elements are not a IfcFacetedBrep representation:\n{}"
-            .format(context.falseguids)
+            "There are no {} elements in the IFC file."
+            .format(ifc_class)
+        )
+    if falsecount == elemcount:
+        assert False, (
+            "All {} {} elements are not "
+            "a IfcFacetedBrep representation."
+            .format(elemcount, ifc_class)
+        )
+    if falsecount > 0:
+        assert False, (
+            "The following {} of {} {} elements are not  "
+            "a IfcFacetedBrep representation: {}"
+            .format(falsecount, elemcount, ifc_class, context.falseelems)
         )
 
 
 @step("all {ifc_class} elements have an {aproperty} property in the {pset} pset")
 def step_impl(context, ifc_class, aproperty, pset):
 
-    elements = IfcFile.get().by_type(ifc_class)
-
     context.falseelems = []
     context.falseguids = []
     context.falseprops = {}
     from ifcopenshell.util.element import get_psets
+
+    elements = IfcFile.get().by_type(ifc_class)
+    elemcount = len(elements)
     for elem in elements:
         psets = get_psets(elem)
         if not (pset in psets and aproperty in psets[pset]):
             context.falseelems.append(str(elem))
             context.falseguids.append(elem.GlobalId)
-        context.falseprops[elem.id()] = str(psets) 
+        context.falseprops[elem.id()] = str(psets)
+
+    falsecount = len(context.falseelems)
+    if elemcount == 0:
+        assert False, (
+            "There are no {} elements in the IFC file."
+            .format(ifc_class)
+        )
+    if falsecount == elemcount:
+        assert False, (
+            "All {} {} elements are missing "
+            "the property {} in the pset {}."
+            .format(elemcount, ifc_class, aproperty, pset)
+        )
+    if falsecount > 0:
+        assert False, (
+            "The following {} of {} {} elements are missing  "
+            "the property {} in the pset {}: {}"
+            .format(
+                falsecount,
+                elemcount,
+                ifc_class,
+                aproperty,
+                pset,
+                context.falseelems
+            )
+        )
 
     if len(context.falseelems) > 0:
         assert False, (

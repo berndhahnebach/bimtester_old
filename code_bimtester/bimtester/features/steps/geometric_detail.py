@@ -34,8 +34,6 @@ def step_impl(context, number):
 @step("all elements must have a shape without errors")
 def step_impl(context):
 
-    elements = IfcFile.get().by_type("IfcBuildingElement")
-
     context.falseelems = []
     context.falseguids = []
     context.falseprops = {}
@@ -69,6 +67,8 @@ def step_impl(context):
     settings.set(settings.SEW_SHELLS, True)
     settings.set(settings.USE_WORLD_COORDS, True)
 
+    elements = IfcFile.get().by_type("IfcBuildingElement")
+    elemcount = len(elements)
     for elem in elements:
         # TODO: some print and update gui and or flush, this could take time
         try:
@@ -93,8 +93,19 @@ def step_impl(context):
             context.falseguids.append(elem.GlobalId)
             context.falseprops[elem.id()] = error
 
-    if len(context.falseelems) > 0:
+    falsecount = len(context.falseelems)
+    if elemcount == 0:
         assert False, (
-            "Geometry elements errors:\n{}"
-            .format(context.falseguids)
+            "There are no {} elements in the IFC file."
+            .format(ifc_class)
+        )
+    if falsecount == elemcount:
+        assert False, (
+            "The geometry of all {} {} elements have errors."
+            .format(elemcount, ifc_class)
+        )
+    if falsecount > 0:
+        assert False, (
+            "The geometry of {} out of all {} {} elements have errors: {}"
+            .format(falsecount, elemcount, ifc_class, context.falseelems)
         )
