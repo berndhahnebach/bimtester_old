@@ -19,7 +19,7 @@ def step_impl(context, schema):
     )
 
 
-@step("IFC data must have a header file description of {header_file_description} such as the new Allplan creates it")
+@step("IFC data must have a header file description of {header_file_description} such as the new Allplan IFC exporter creates it")
 def step_impl(context, header_file_description):
     
     is_header_file_description = IfcFile.get().wrapped_data.header.file_description.description
@@ -40,7 +40,7 @@ def step_impl(context, identifier):
     )
 
 
-@step("IFC data must be exported by the application verion {version}")
+@step("IFC data must be exported by the application version {version}")
 def step_impl(context, version):
 
     software_version = IfcFile.get().by_type("IfcApplication")[0].Version
