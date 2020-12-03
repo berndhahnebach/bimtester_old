@@ -109,19 +109,13 @@ def step_impl(context, ifc_class):
 @step('all {ifc_class} elements class attributes have a value')
 def step_impl(context, ifc_class):
 
-    # schema = IfcFile.get().schema
-    # TODO fix next tow lines
-    import ifcopenshell
-    # schema = ifcopenshell.ifcopenshell_wrapper.schema_by_name("IFC2X3")
-    schema = ifcopenshell.ifcopenshell_wrapper.schema_by_name(IfcFile.get().schema)
-    # print(schema)  # some class
-    # print(IfcFile.get().schema)  # string
-    # some class is needed
-
+    from ifcopenshell.ifcopenshell_wrapper import schema_by_name
+    # schema = schema_by_name("IFC2X3")
+    schema = schema_by_name(IfcFile.get().schema)
     class_attributes = []
     for cl_attrib in schema.declaration_by_name(ifc_class).all_attributes():
         class_attributes.append(cl_attrib.name())
-    print(class_attributes)
+    # print(class_attributes)
 
     context.falseelems = []
     context.falseguids = []
@@ -151,15 +145,21 @@ def step_impl(context, ifc_class):
         )
     if falsecount == elemcount:
         assert False, (
-            "For all {} {} elements at least one of "
-            "the class attributes has no value."
-            .format(elemcount, ifc_class)
+            "For all {} {} elements at least "
+            "one of these class attributes {} has no value."
+            .format(elemcount, ifc_class, failed_attribs)
         )
     if falsecount > 0:
         assert False, (
-            "For the following {} of {} {} elements "
-            "at least one of the class attributes has no value: {}"
-            .format(falsecount, elemcount, ifc_class, context.falseelems)
+            "For the following {} out of {} {} elements at least "
+            "one of these class attributes {} has no value: {}"
+            .format(
+                falsecount,
+                elemcount,
+                ifc_class,
+                failed_attribs,
+                context.falseelems
+            )
         )
     # TODO output which attributs are None
 
