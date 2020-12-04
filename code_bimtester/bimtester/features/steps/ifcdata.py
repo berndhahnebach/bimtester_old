@@ -11,6 +11,13 @@ def step_impl(context, file):
         assert False, f"The file {file} could not be loaded"
 
 
+@step("IFC data must use the {schema} schema")
+def step_impl(context, schema):
+    assert IfcFile.get().schema == schema, "We expected a schema of {} but instead got {}".format(
+        schema, IfcFile.get().schema
+    )
+
+
 @step('The IFC file "{file}" is exempt from being provided')
 def step_impl(context, file):
     pass
@@ -51,13 +58,6 @@ def step_impl(context, version):
         "The IFC file was not exported by application version {} "
         "instead it was exported by version {}"
         .format(version, real_version)
-    )
-
-
-@step("IFC data must use the {schema} schema")
-def step_impl(context, schema):
-    assert IfcFile.get().schema == schema, "We expected a schema of {} but instead got {}".format(
-        schema, IfcFile.get().schema
     )
 
 
