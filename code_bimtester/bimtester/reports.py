@@ -7,10 +7,10 @@ import pystache
 def generate_report(adir="."):
     print("# Generating HTML reports now.")
 
-    # get html template
-    html_template_file = os.path.join(
+    # get html template path
+    html_template_path = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
-        "features/template.html"
+        "features/"
     )
 
     # get report file
@@ -93,7 +93,16 @@ def generate_report(adir="."):
         data["total_steps"] = sum([s["total_steps"] for s in data["scenarios"]])
         data["pass_rate"] = round((data["total_passes"] / data["total_steps"]) * 100)
 
-        html_report_file = os.path.join(report_dir, "{}.html".format(file_name))
-        with open(html_report_file, "w") as out:
-            with open(html_template_file) as template:
+        html_report = os.path.join(report_dir, "{}.html".format(file_name))
+        # workaround for retrieving the feature file language
+        print(feature["keyword"])
+        if feature["keyword"] == "Feature":
+            html_tmpl = os.path.join(html_template_path, "template.html")
+        elif feature["keyword"] == "Funktionalität":
+            html_tmpl = os.path.join(html_template_path, "template_de.html")
+        else:
+            # standard English
+            html_tmpl = os.path.join(html_template_path, "template.html")
+        with open(html_report, "w") as out:
+            with open(html_tmpl) as template:
                 out.write(pystache.render(template.read(), data))
