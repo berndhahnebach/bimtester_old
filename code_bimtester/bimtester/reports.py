@@ -100,6 +100,8 @@ def generate_report(adir="."):
             html_tmpl = os.path.join(html_template_path, "template.html")
         elif feature["keyword"] == "Funktionalität":
             html_tmpl = os.path.join(html_template_path, "template_de.html")
+        elif feature["keyword"] == "Fonctionnalité":
+            html_tmpl = os.path.join(html_template_path, "template_fr.html")
         else:
             # standard English
             html_tmpl = os.path.join(html_template_path, "template.html")
