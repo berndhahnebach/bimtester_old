@@ -50,7 +50,7 @@ def show_panel(features="", ifcfile=""):
 
     QtGui.QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
     mw = FreeCADGui.getMainWindow()
-    awidget = QtGui.QDockWidget("BimTesterGui", mw)
+    awidget = QtGui.QDockWidget("BIMTesterGui", mw)
     awidget.setWidget(TaskPanel(features, ifcfile))
     mw.addDockWidget(QtCore.Qt.RightDockWidgetArea, awidget)
     QtGui.QApplication.restoreOverrideCursor()
