@@ -31,8 +31,8 @@ def step_impl(context, number):
         assert False, message
 
 
-@step("all elements must have a shape without errors")
-def step_impl(context):
+@step("all {ifc_class} elements must have a geometric representation without errors")
+def step_impl(context, ifc_class):
 
     context.falseelems = []
     context.falseguids = []
