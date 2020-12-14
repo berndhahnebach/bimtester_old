@@ -1,5 +1,6 @@
 from behave import step
 
+from utils import assert_elements
 from utils import IfcFile
 
 
@@ -42,6 +43,7 @@ def step_impl(context, ifc_class):
     # TODO import FreeCAD, to be able to run from outside FreeCAD
     try:
         import FreeCAD
+        False if FreeCAD.__name__ else True  # flake8
     except Exception:
         assert False, (
             "FreeCAD python module could not be imported. "
@@ -68,7 +70,6 @@ def step_impl(context, ifc_class):
     settings.set(settings.USE_WORLD_COORDS, True)
 
     elements = IfcFile.get().by_type("IfcBuildingElement")
-    elemcount = len(elements)
     for elem in elements:
         # TODO: some print and update gui and or flush, this could take time
         try:
@@ -93,19 +94,11 @@ def step_impl(context, ifc_class):
             context.falseguids.append(elem.GlobalId)
             context.falseprops[elem.id()] = error
 
-    falsecount = len(context.falseelems)
-    if elemcount == 0:
-        assert False, (
-            "There are no {} elements in the IFC file."
-            .format(ifc_class)
-        )
-    if falsecount == elemcount:
-        assert False, (
-            "The geometry of all {} {} elements have errors."
-            .format(elemcount, ifc_class)
-        )
-    if falsecount > 0:
-        assert False, (
-            "The geometry of {} out of all {} {} elements have errors: {}"
-            .format(falsecount, elemcount, ifc_class, context.falseelems)
-        )
+    context.elemcount = len(elements)
+    context.falsecount = len(context.falseelems)
+    assert_elements(
+        ifc_class,
+        context.elemcount,
+        context.falsecount,
+        context.falseelems
+    )

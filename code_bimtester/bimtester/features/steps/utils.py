@@ -78,3 +78,22 @@ def assert_pset(element, pset_name, prop_name=None, value=None):
     assert actual_value == value, 'We expected a value of "{}" but instead got "{}" for the element {}'.format(
         value, actual_value, element
     )
+
+
+def assert_elements(ifc_class, elemcount, falsecount, falseelems):
+    if elemcount == 0:
+        assert False, (
+            "There are no {} elements in the IFC file."
+            .format(ifc_class)
+        )
+    if falsecount == elemcount:
+        assert False, (
+            "The geometry of all {} {} elements have errors."
+            .format(elemcount, ifc_class)
+        )
+    if falsecount > 0:
+        assert False, (
+            "The geometry of {} out of all {} {} elements have errors: {}"
+            .format(falsecount, elemcount, ifc_class, falseelems)
+        )
+
