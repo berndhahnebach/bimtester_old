@@ -8,7 +8,7 @@ def generate_report(adir="."):
     print("# Generating HTML reports now.")
 
     # get html template path
-    html_template_path = os.path.join(
+    report_template_path = os.path.join(
         os.path.dirname(os.path.realpath(__file__)),
         "features/"
     )
@@ -93,18 +93,40 @@ def generate_report(adir="."):
         data["total_steps"] = sum([s["total_steps"] for s in data["scenarios"]])
         data["pass_rate"] = round((data["total_passes"] / data["total_steps"]) * 100)
 
-        html_report = os.path.join(report_dir, "{}.html".format(file_name))
+        # translate report
+        # json.dump(mydict, myfile, indent=4)
         # workaround for retrieving the feature file language
         print(feature["keyword"])
         if feature["keyword"] == "Feature":
-            html_tmpl = os.path.join(html_template_path, "template.html")
+            strings_file_report = os.path.join(
+                report_template_path,
+                "strings_template_en.json"
+            )
         elif feature["keyword"] == "Funktionalität":
-            html_tmpl = os.path.join(html_template_path, "template_de.html")
+            strings_file_report = os.path.join(
+                report_template_path,
+                "strings_template_de.json"
+            )
         elif feature["keyword"] == "Fonctionnalité":
-            html_tmpl = os.path.join(html_template_path, "template_fr.html")
+            strings_file_report = os.path.join(
+                report_template_path,
+                "strings_template_fr.json"
+            )
         else:
             # standard English
-            html_tmpl = os.path.join(html_template_path, "template.html")
-        with open(html_report, "w") as out:
-            with open(html_tmpl) as template:
+            strings_file_report = os.path.join(
+                report_template_path,
+                "strings_template_en.json"
+            )
+        strings_report = json.loads(
+            open(strings_file_report, encoding="utf8").read()
+        )
+        # print(strings_report)
+        data.update(strings_report)
+        # print(data)
+
+        html_report = os.path.join(report_dir, "{}.html".format(file_name))
+        html_tmpl = os.path.join(report_template_path, "template.html")
+        with open(html_report, "w", encoding="utf8") as out:
+            with open(html_tmpl, encoding="utf8") as template:
                 out.write(pystache.render(template.read(), data))
