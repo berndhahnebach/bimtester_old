@@ -97,3 +97,8 @@ def assert_elements(ifc_class, elemcount, falsecount, falseelems):
             .format(falsecount, elemcount, ifc_class, falseelems)
         )
 
+def assert_schema(real_schema, target_schema):
+    assert real_schema == target_schema, (
+        "We expected a schema of {} but instead got {}"
+        .format(target_schema, real_schema)
+    )
